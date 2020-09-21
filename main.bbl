@@ -1,0 +1,141 @@
+\begin{thebibliography}{10}
+
+\bibitem{HyVar}
+The {HyVar} home page.
+\newblock \textsf{www.hyvar-project.eu}.
+
+\bibitem{mvnassemblysite}
+Apache.
+\newblock Maven assembly plug-in.
+\newblock \textsf{http://maven.apache.org/plugins/maven-assembly-plugin/},
+  2013.
+
+\bibitem{BetDamSch:ACTA-2013}
+L.~Bettini, F.~Damiani, and I.~Schaefer.
+\newblock Compositional type checking of delta-oriented software product lines.
+\newblock {\em Acta Informatica}, 50(2):77--122, 2013.
+
+\bibitem{ChestaEtAl:ISOLA-2016}
+C.~Chesta, F.~Damiani, L.~Dobriakova, M.~Guernieri, S.~Martini, M.~Nieke,
+  V.~Rodrigues, and S.~Schuster.
+\newblock A toolchain for delta-oriented modeling of software product lines.
+\newblock In T.~Margaria and B.~Steffen, editors, {\em Leveraging Applications
+  of Formal Methods, Verification and Validation: Discussion, Dissemination,
+  Applications: 7th International Symposium, ISoLA 2016, Imperial, Corfu,
+  Greece, October 10-14, 2016, Proceedings, Part II}, volume 9953 of {\em
+  Lecture Notes in Computer Science}, pages 497--511, Cham, 2016. Springer
+  International Publishing.
+
+\bibitem{DamianiLienhardt:iFM2016}
+F.~Damiani and M.~Lienhardt.
+\newblock On type checking delta-oriented product lines.
+\newblock In E.~{\'A}brah{\'a}m and M.~Huisman, editors, {\em Integrated Formal
+  Methods: 12th International Conference, IFM 2016, Reykjavik, Iceland, June
+  1-5, 2016, Proceedings}, volume 9681 of {\em Lecture Notes in Computer
+  Science}, pages 47--62, Cham, 2016. Springer International Publishing.
+
+\bibitem{DamLie-TR-iFM-2016}
+F.~Damiani and M.~Lienhardt.
+\newblock On type checking delta-oriented product lines (version with
+  appendix).
+\newblock Technical report, Dipartimento di Informatica, University of Torino,
+  2016.
+\newblock \textsf{http://di.unito.it/movere/tr/}.
+
+\bibitem{Eclipse}
+E.~Foundation.
+\newblock Eclipse ide.
+\newblock \textsf{https://www.eclipse.org/}.
+
+\bibitem{EMF}
+E.~Foundation.
+\newblock The {Eclipse Modeling Framework (EMF)} home page.
+\newblock \textsf{www.eclipse.org/modeling/emf/}.
+
+\bibitem{HAREL:SPC-1987}
+D.~Harel.
+\newblock Statecharts: a visual formalism for complex systems.
+\newblock {\em Science of Computer Programming}, 8(3):231 -- 274, 1987.
+
+\bibitem{IgarashiPierceWadler:TOPLAS-2001}
+A.~Igarashi, B.~Pierce, and P.~Wadler.
+\newblock Featherweight {J}ava: A minimal core calculus for {J}ava and {GJ}.
+\newblock {\em ACM TOPLAS}, 23(3):396--450, 2001.
+
+\bibitem{Docker}
+D.~Inc.
+\newblock Docker.
+\newblock \textsf{https://www.docker.com/}, 2013.
+
+\bibitem{Yakindu}
+Itemis.
+\newblock Yakindu statechart tools.
+\newblock \textsf{https://www.itemis.com/en/yakindu/state-machine/}, 2017.
+
+\bibitem{Lienhardt12-3}
+M.~Lienhardt and D.~Clarke.
+\newblock Conflict detection in delta-oriented programming.
+\newblock In {\em ISoLA}, pages 178--192, 2012.
+
+\bibitem{LIENHARDT}
+M.~Lienhardt, F.~Damiani, L.~Testa, and G.~Turin.
+\newblock On checking delta-oriented product lines of statecharts.
+\newblock {\em Science of Computer Programming}, 166:3 -- 34, 2018.
+
+\bibitem{Jolie}
+F.~Montesi.
+\newblock Jolie programming language.
+\newblock \textsf{https://www.jolie-lang.org/}, 2017.
+
+\bibitem{microservices}
+F.~Montesi, C.~Guidi, and G.~Zavattaro.
+\newblock Service oriented programming with jolie.
+\newblock In {\em Web Services Foundations}, chapter~4, pages 81--107. Springer
+  New York, 2014.
+
+\bibitem{Nieke:2017:DIT:3023956.3023962}
+M.~Nieke, G.~Engel, and C.~Seidl.
+\newblock Darwinspl: An integrated tool suite for modeling evolving
+  context-aware software product lines.
+\newblock In {\em Proceedings of the Eleventh International Workshop on
+  Variability Modelling of Software-intensive Systems}, VAMOS '17, pages
+  92--99, New York, NY, USA, 2017. ACM.
+
+\bibitem{hyvarrec}
+M.~Nieke, J.~Mauro, C.~Seidl, and I.~C. Yu.
+\newblock User profiles for context-aware reconfiguration in software product
+  lines.
+\newblock In T.~Margaria and B.~Steffen, editors, {\em Leveraging Applications
+  of Formal Methods, Verification and Validation: Discussion, Dissemination,
+  Applications}, pages 563--578, Cham, 2016. Springer International Publishing.
+
+\bibitem{SPLC}
+I.~Schaefer, L.~Bettini, V.~Bono, F.~Damiani, and N.~Tanzarella.
+\newblock {Delta-oriented Programming of Software Product Lines}.
+\newblock In {\em Proc.\ of SPLC 2010}, volume 6287 of {\em LNCS}, pages
+  77--91. Springer, 2010.
+
+\bibitem{DBLP:conf/modellierung/SeidlSA14}
+C.~Seidl, I.~Schaefer, and U.~A{\ss}mann.
+\newblock Deltaecore - {A} model-based delta language generation framework.
+\newblock In {\em Modellierung 2014, 19.-21. M{\"{a}}rz 2014, Wien,
+  {\"{O}}sterreich}, pages 81--96, 2014.
+
+\bibitem{testa}
+L.~Testa.
+\newblock An eclipse plug-in for the analysis of software product lines of
+  statecharts, Bachelor Thesis, Department of Comp. Sci., Univ. of Turin 2018.
+
+\bibitem{Statecharts}
+uml diagrams.org.
+\newblock Uml state machine.
+\newblock \textsf{https://www.uml-diagrams.org/state-machine-diagrams.html}.
+
+\bibitem{statechartsmining}
+D.~Wille, S.~Schulze, and I.~Schaefer.
+\newblock Variability mining of state charts.
+\newblock In {\em Proceedings of the 7th International Workshop on
+  Feature-Oriented Software Development}, FOSD 2016, pages 63--73, New York,
+  NY, USA, 2016. ACM.
+
+\end{thebibliography}

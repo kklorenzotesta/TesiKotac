@@ -1,0 +1,66 @@
+\contentsline {chapter}{Introduction}{7}
+\contentsline {part}{Part I}{11}
+\contentsline {chapter}{\numberline {1}The HyVar Project}{15}
+\contentsline {section}{\numberline {1.1}Overview}{15}
+\contentsline {section}{\numberline {1.2}Software Product Lines}{17}
+\contentsline {section}{\numberline {1.3}Variability Model}{18}
+\contentsline {section}{\numberline {1.4}Delta-Oriented Programming}{19}
+\contentsline {section}{\numberline {1.5}Preferences}{20}
+\contentsline {section}{\numberline {1.6}HyVar cloud infrastructure}{21}
+\contentsline {chapter}{\numberline {2}Statecharts}{25}
+\contentsline {section}{\numberline {2.1}Yakindu Statechart}{25}
+\contentsline {section}{\numberline {2.2}Statecharts in HyVar}{26}
+\contentsline {section}{\numberline {2.3}Featherweight Statechart Language with Regions}{27}
+\contentsline {chapter}{\numberline {3}DarwinSPL}{31}
+\contentsline {section}{\numberline {3.1}Overview}{31}
+\contentsline {section}{\numberline {3.2}Eclipse DeltaEcore}{31}
+\contentsline {section}{\numberline {3.3}DarwinSPL}{32}
+\contentsline {chapter}{\numberline {4}Docker and Jolie}{35}
+\contentsline {section}{\numberline {4.1}Docker}{35}
+\contentsline {section}{\numberline {4.2}Docker in HyVar}{35}
+\contentsline {section}{\numberline {4.3}Jolie}{35}
+\contentsline {section}{\numberline {4.4}Jolie in HyVar}{36}
+\contentsline {chapter}{\numberline {5}First demonstrator}{37}
+\contentsline {section}{\numberline {5.1}ECU\_A}{37}
+\contentsline {part}{Part II}{41}
+\contentsline {chapter}{\numberline {6}Second demonstrator}{45}
+\contentsline {section}{\numberline {6.1}CAR}{45}
+\contentsline {subsection}{\numberline {6.1.1}ECU\_B}{47}
+\contentsline {subsection}{\numberline {6.1.2}ECU\_C}{49}
+\contentsline {chapter}{\numberline {7}HyVar Java compiler}{55}
+\contentsline {section}{\numberline {7.1}Overview}{55}
+\contentsline {section}{\numberline {7.2}Software Components}{56}
+\contentsline {subsection}{\numberline {7.2.1}Docker container}{56}
+\contentsline {subsection}{\numberline {7.2.2}Jolie Statechart Receiver Microservice}{56}
+\contentsline {subsection}{\numberline {7.2.3}Core Java service}{58}
+\contentsline {subsection}{\numberline {7.2.4}Maven Plug-in}{58}
+\contentsline {subsubsection}{Project Object Model}{58}
+\contentsline {chapter}{\numberline {8}A formal analysis for FSLwR}{59}
+\contentsline {section}{\numberline {8.1}The formal analysis}{60}
+\contentsline {subsection}{\numberline {8.1.1}Well-formedness of FSLwR}{61}
+\contentsline {subsection}{\numberline {8.1.2}{\rm {F$\Delta $SL}}: delta-oriented programming for FSLwR}{61}
+\contentsline {subsection}{\numberline {8.1.3}{\rm {F$\Delta $SL}}\ guidelines}{64}
+\contentsline {subsection}{\numberline {8.1.4}{\rm {F$\Delta $SL}}\ pre-well-formedness}{65}
+\contentsline {subsection}{\numberline {8.1.5}{\rm {F$\Delta $SL}}\ SPL information extraction}{66}
+\contentsline {subsection}{\numberline {8.1.6}Applicability-consistency}{67}
+\contentsline {subsubsection}{First part}{69}
+\contentsline {subsubsection}{Second part}{69}
+\contentsline {subsubsection}{Third part}{70}
+\contentsline {subsection}{\numberline {8.1.7}Dependency-consistency}{70}
+\contentsline {section}{\numberline {8.2}Complexity of the analysis}{72}
+\contentsline {section}{\numberline {8.3}Relaxation of delta pre-well-formedness requirement}{74}
+\contentsline {chapter}{\numberline {9}The analysis tool}{77}
+\contentsline {section}{\numberline {9.1}The general architecture}{77}
+\contentsline {section}{\numberline {9.2}An analysis example}{78}
+\contentsline {section}{\numberline {9.3}Future work}{81}
+\contentsline {chapter}{\numberline {10}Conclusions}{83}
+\contentsline {section}{\numberline {10.1}Acknowledgments}{85}
+\vspace \bigskipamount \noindent \textbf {Appendix}\par 
+\contentsline {chapter}{\numberline {A}Proofs}{87}
+\contentsline {section}{\numberline {A.1}{\rm {F$\Delta $SL}}\ operational semantics}{87}
+\contentsline {section}{\numberline {A.2}The information extraction algorithm}{91}
+\contentsline {section}{\numberline {A.3}Preliminary Lemma}{96}
+\contentsline {section}{\numberline {A.4}Applicability Consistency}{97}
+\contentsline {section}{\numberline {A.5}Dependency Consistency}{98}
+\contentsline {section}{\numberline {A.6}Main Theorem}{100}
+\contentsline {chapter}{References}{100}

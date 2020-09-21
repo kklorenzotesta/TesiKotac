@@ -1,0 +1,86 @@
+Aggregate programming \cite{Aggregate01} is an emerging framework and paradigm for the development of Collective Adaptive Systems. It is based on a layered architecture with which the developers can describe the system as an "aggregate" of heterogeneous devices, abstracting from the details of coordination and comunication and instead focusing on the collective behavior. The foundation of the Aggregate Programming is the \textit{field calculus} \cite{FieldCalculus}, a functional programming model that unifies local and aggregate semantic.
+
+\section{Field Calculus}
+
+The \textit{field calculus} is a programming model based on the notion of \textit{computational fields} \cite{Field} (or simply \textit{field}). A \textit{field} is a distributed map from devices to computation objects across time. Therefore the field calculus describes how to build those distributed structure and reusable blocks of computation from fields to fields.
+
+The computational model of the field calculus is based on a network of devices that executes a common program in asyncronous rounds. These devices comunicate with neighbour devices following a dynamic (physical or logical) proximity relation. From the local point of view of a single device every round of execution is composed by the following steps: (i) all the information from sensors and the device memory are collected, (ii) from the most recent messages from neighbouring devices a \textit{neighbouring field} is formed, (iii) the program is executed with the collected information, (iv) the results of the computation are stored in the device memory and shared to the neighbouring devices as a message. A device $\deviceId$ is said to "fire" when it runs a round of execution.
+
+From the aggregate point of view the whole computation can be seen as  a space-time data structure, called \textit{field evolution} $\feS$.  Every execution is represented by a point in space-time called an \textit{event} $\eventId$, $\feS$ is then a map from events to computations values. As described in \cite{Universality} the causal relationship between events can be formalized by an \textit{event structure}.
+
+An \textit{event structure} $\EventS$ is a countable set of events \textit{E} togheter with a neighbouring relation $\neigh \subseteq E \times E $ and a causality relation $< \subseteq E \times E$, such that the transitive closure of $\neigh$ forms the irreflexive partial order $<$ and the set $\bp{\eventId' \in E | \eventId' < \eventId }$ is finite for all $\eventId$ (i.e., $<$ is locally finite). Every $\neigh$ relation represent a message sent from the head neighbour to the tail neighbour with the results of the head computation.
+
+TODO add figure.
+
+The field calculus is a tiny functional language based on a set of abstract operators for the field computations. In this thesis only an higher-order extension of the field calculus, called \textit{higher-order field calculus (HFC)} \cite{FieldCalculus}, will be considered. HFC extends the field calculus by treating function as first-class values and will be simply refered to as \textit{field calculus} from now on.
+
+\begin{figure}[t]
+\centering
+\centerline{\framebox[\linewidth]{$
+        \begin{array}{lcl@{\hspace{18mm}}r}
+                \PROGRAM & \BNFcce & \overline{\FUNCTION}  \; \e
+                &{ \mbox{\footnotesize program}}
+                \\[3pt]
+                \FUNCTION & \BNFcce &  \defK \,\; \fname (\overline{\xname}) \; \{ \e \}
+                &{ \mbox{\footnotesize function declaration}}
+                \\[3pt]
+                \e & \BNFcce &  \xname \;\BNFmid\; (\overline{\xname}) \toSym{\name} \e \; \BNFmid\; \anyvalue \;\BNFmid\; \e(\overline\e) \;\BNFmid\; \fifK (\e) \{\e\} \{\e\} \;\BNFmid &{ \mbox{\footnotesize expression}} \\
+                && \; \nbrK\{\e\} \;\BNFmid\; \repK(\e)\{ (\xname) \ftoSymK \e \}
+                \\[3pt]
+                \anyvalue & \BNFcce &  \lvalue \; \BNFmid \; \fvalue
+                &{ \mbox{\footnotesize value}}
+                \\[3pt]
+              \lvalue & \BNFcce &  \dcOf{\dc}{\overline\lvalue} \; \BNFmid \; \funvalue
+                &{ \mbox{\footnotesize local value}}
+                \\[3pt]
+                \fvalue & \BNFcce &  \envmap{\overline\deviceId}{\overline\lvalue}
+                &{ \mbox{\footnotesize neighbouring field value}}
+                \\[3pt]
+                \funvalue & \BNFcce &  \fname \; \BNFmid \; \bname \;\BNFmid\; (\overline{\xname}) \toSym{\name} \e 
+                &{ \mbox{\footnotesize function value}}
+                \\[3pt]
+        \end{array}
+        $}
+}
+\caption{Abstract syntax of the field calculus from \cite{FieldCalculus}} \label{fig:fcsyntax}
+\end{figure}
+
+The set of abstract operators is provided in figure \ref{fig:fcsyntax}. Following the notation of \cite{FeatherJava} the overbar denotes a sequence, for example $\overline{\e}$  denotes a (possible empty) sequence of expressions $\e_1, \e_2, \dots, \e_n$.
+
+A program is then a sequence of function definition followed by a main expression $e$, which defines the behavior of the aggregate. 
+
+A function declaration defines a function named $d$ with a sequence of variable names $\overline{\xname}$ and a body of the function consisting in an expression $e$. The defined functions can be recursive.
+
+An expression can be:
+\begin{itemize}
+\item a variable $\xname$ referring a function parameter
+\item an anonymous function $ (\overline{\xname}) \toSym{\name} \e$, where $\overline{\xname}$ are variable names for the formal parameter, $\e$ is the body of the function and $\name$ is a \textit{tag} identifying the function. It doesn't appear in the source code but is uniquely determined by its syntactical representation
+\item a function call $\e(\overline{\e})$, where $\e$ evaluates to a field of functions $\funvalue$, $\overline{\e}$ are the function arguments and evaluates to the function application
+\item a {branching expression} $\fifK (\e_0) \{\e_1\} \{\e_2\}$, also called  \textit{domain restriction expression}, its a lazy evaluated expression that divides the computation in two branches: the devices for which $\e_0$ evaluates to $\truevalue$ computes $\e_1$, the devices for which $\e_0$ evaluates to $\falsevalue$ coputes $\e_2$
+\item an \textit{$\nbrK$-expression}, also called \textit{neightbouring field construction}, $\nbrK\{\e\}$ which evaluates to a field from neighbouring devices (including the execution device) to their most recent evaluation of the expression $\e$
+\item a \textit{$\repK$-expression}, also called \textit{time evolution expression}, $\repK(\e_0)\{ (\xname) \ftoSymK \e \}$, which at each round evaluates to the application to the function of the result of the previous round, using the \textit{initialization expression} $\e_0$ in the first round.
+\end{itemize}
+
+A value can be either a \textit{neighbouring field} $\fvalue$ or a \textit{local value} $\lvalue$. Neighbouring field values doesn't appear in the source code but can only be computed dynamically, usually by built-in operators like $\nbrK$.
+
+Local values can be either \textit{data value} $\dcOf{\dc}{\overline\lvalue}$, in which $\dc$ its a data constructor and $\overline \lvalue$ are local value arguments, or a function value $\funvalue$.
+
+A \textit{function value} $\funvalue$ can be a built-in function $\bname$, a declared function $\fname$ or an anonymous function value $(\overline{\xname}) \toSym{\name} \e$.
+
+An additional operator $\shareK(\e_0)\{(\xname) \toSym{} \e_1\}$ has been added in \cite{Share}, which each round evaluates to the application to the function of the neighbouring field with the results of the previous round for each neighbouring device, using the expression $\e_0$ in the first round as the value for the executing device. This new operator allows to write more efficient algorithms.
+
+
+\section{Aggregate Programming Layers}
+
+TODO add figure
+
+From the field calculus the aggregate programming framework is built as a series of layers, visibles in figure TODO. The \textit{resilient coordination operators layer} defines using the operators of the field calculus a series of functions that hide the complexity of the basic operators and restric the language to a self-stabilising fragment  of the field calculus \cite{SelfStabilizing}. Then over this operators aggregate programming libraries provides reusable and flexible high level developer APIs, e.g. function for broadcasting values, to computed distances among devices, etc. The application code is then developed on the reusable blocks provided by the libraries.
+
+The resilient coordination layer defines in particular the following three operators:
+\begin{itemize}
+\item \textit{Block} $\mathtt{G(source, initial, metric, accumulate)}$, a spreading operator for distance measurement and broadcast of values. It computes the shortest-path from a $\mathtt{source}$ (field with value $\truevalue$ for sources) accourting to a $\mathtt{metric}$ (function mapping neightbours to distance) and propagate values up the gradient starting with the value of $\mathtt{initial}$ and accumulating with the binary function $\mathtt{accumulate}$
+\item \textit{Block} $\mathtt{C(potential, local, null, accumulate)}$, an operator that accumulates values with the binary function $\mathtt{accumulate}$ down to the $\mathtt{source}$ following the $\mathtt{potential}$ field. $\mathtt{null}$ provides the idempotent value for the accumulation function, $\mathtt{local}$ is accumulated with any values from neighbours at higher potential
+\item \textit{Block} $\mathtt{T(initial, zero, decay)}$, a flexible countdown operator starting from $\mathtt{initial}$ to $\mathtt{zero}$ decreasing by the $\mathtt{decay}$ function.
+\end{itemize}
+
+Those operators are able to cover many of the common patterns and define a self-stabilising fragment of the field calculus. A computation is self-stabilizing if from any state, without changes of any environment, the computation reaches after a certain number of round a correct final result.
