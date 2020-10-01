@@ -1,3 +1,5 @@
+\section{Scafi semantic}
+
 Since Scafi is based on the notion of computations against a neighbour instead of neighbouring values it has different semantics from the higher order field calculus (\HFC) and its implementation Protelis. In order to formalize the semantic of Scafi a subset of it has been considered called \textit{Featherweight Scafi (\FSCAFI)} \cite{Scafi} and only the semantic of \FSCAFI has been considered. It has been proved that both \FSCAFI and \HFC{} can express programs that the other can't, but they have a non-empty intersection that can express all the self-stabilising build blocks.
 
 \begin{figure}[t]
@@ -24,7 +26,7 @@ $}
 
 The syntax of \FSCAFI is shown in figure \ref{fig:fscafisyntax}, it focus on the aggregate constructs ignoring the Scala specific features. A program $\PROGRAM$ is defined as a sequence of function declarations $\overline{\FUNCTION}$ followed by a main expression $\e$. A function declaration $\FUNCTION$ defines a (possibly recursive) function named $\fname$, with a sequence of formal parameters $\overline{\xname}$ and a body expression $\e$. An expression can be a variable $\xname$, a value $\anyvalue$, a $\mathtt{rep}$-expression $\repK(\e)\{ \e \}$ modelling time evolution, a $\mathtt{nbr}$-expression $\nbrK\{\e\}$ modelling neighbourhood interaction or a $\mathtt{foldhood}$-expression $\foldK(\e)(\e)\{\e\}$ combaining a computation against neighbours.
 
-A value can be either a \textit{data value} $\dc(\overline{\anyvalue})$ consisting of a \textit{data constructor} $\dc$ applied to a sequence of values $\overline{\anyvalue}$, or a \textit{function value} $\funvalue$. A function value can be the name of a built-in function $\bname$, the name of a user defined function $\fname$, or an anonymous function $(\overline{\xname}) \; \toSymKtag{\name}{\e}$ where $\overline{\xname}$ are the formal parameters, $\e$ the body of the function and $\name$ a \textit{tag} that uniquely identifies the function and doesn't occours in the source program.
+A value can be either a \textit{data value} $\dc(\overline{\anyvalue})$ consisting of a \textit{data constructor} $\dc$ applied to a sequence of values $\overline{\anyvalue}$, or a \textit{function value} $\funvalue$. A function value can be the name of a built-in function $\bname$, the name of a user defined function $\fname$, or an anonymous function $(\overline{\xname}) \; \toSymKtag{\name}{\e}$ where $\overline{\xname}$ are the formal parameters, $\e$ the body of the function and $\name$ a \textit{tag} that uniquely identifies the function and doesn't occours in the source program. A built-in function can be a \textit{pure operator} like the $\mathtt{mux}$ function or mathematical operators, a \textit{sensor} which depends on the environmental conditions of the computing device, or a \textit{relational sensor} which is a sensor depending additionally on a neighbouring device which the computation is happening against.
 
 \begin{figure}[!t]{
  \framebox[1\textwidth]{
@@ -222,6 +224,90 @@ and value-tree environments:}\\
  \caption{Big-step operational semantics for expression evaluation from \cite{Scafi}.} \label{fig:fscafisemantics}
 \end{figure}
 
+\begin{figure}[!t]{
+ \framebox[1\textwidth]{
+ $\begin{array}{l}
+\textbf{Auxiliary rules for expression evaluation failure:} \hfill
+   %\qquad\qquad\qquad\quad\;\;
+    \boxed{\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e}}
+\skiptransition
+\begin{array}{c}
+\surfaceTyping{E-NBR-FAIL}{
+    ~~ \quad
+    \deviceId \neq \deviceId' \not\in \domof{\Trees}
+ }{
+	\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\nbrK\{\e\}}
+}
+\skiptransitionN
+\\
+\surfaceTyping{E-R-APP-FAIL}{
+	\begin{array}{ll}
+	\bsopsem{\deviceId,\deviceId}{\piIof{1}{\Trees}}{\senstate}{\e}{\vtree} 
+      &
+      ~
+       \bsopsem{\deviceId,\deviceId'}{\piIof{i+1}{\Trees}}{\senstate}{\e_i}{\vtree_i} ~~ \text{for all}\; i \in 1, \ldots, n
+      \\
+      \snvalue = \vrootOf{\vtree} \mbox{ is a relational-built-in}
+      & 
+    ~
+    \deviceId \neq \deviceId' \not\in \domof{\piBof{\snvalue}{\Trees}}
+	\end{array}
+ }{
+	\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e(\overline\e)}
+}
+\skiptransitionN
+\\
+%\surfaceTyping{E-APP-FUN-FAIL}{
+%	~~ \quad
+%	\bsopsemFAIL{\deviceId,\deviceId}{\piIof{n+1}{\Trees}}{\senstate}{\e}
+% }{
+%	\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e(\overline\e)}
+%}
+%\skiptransitionN
+%\\
+\surfaceTyping{E-APP-ARG-FAIL}{  
+	\begin{array}{ll}
+	 \bsopsem{\deviceId,\deviceId}{\piIof{1}{\Trees}}{\senstate}{\e}{\vtree}  
+       & 
+      \quad
+       \overline{\e} = \e_1,...,\e_n 
+        \qquad
+         n\ge 0
+	   \\
+	  \bsopsem{\deviceId,\deviceId'}{\piIof{i+1}{\Trees}}{\senstate}{\e_i}{\vtree_i}
+	&
+	  \quad
+	               \text{for all } i \in 1,...,m < n
+	\\
+	  \bsopsemFAIL{\deviceId,\deviceId'}{\piIof{m+2}{\Trees}}{\senstate}{\e_{m+1}}
+	\end{array}
+ }{
+	\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e(\overline{\e})}
+}
+\skiptransitionN
+\\
+\surfaceTyping{E-D-APP-FAIL}{
+	\begin{array}{ll}
+		\bsopsem{\deviceId,\deviceId}{\piIof{1}{\Trees}}{\senstate}{\e}{\vtree} 
+       & 
+       \quad
+       \bsopsem{\deviceId,\deviceId'}{\piIof{i+1}{\Trees}}{\senstate}{\e_i}{\vtree_i} ~~ \text{for all}\; i \in 1, \ldots, n
+        \\
+        \funvalue = \vrootOf{\vtree} \mbox{ is not a built-in}
+        & 
+        \quad
+	  \bsopsemFAIL{\deviceId,\deviceId'}{\piBof{\funvalue}{\Trees}}{\senstate}{\applySubstitution{\body{\funvalue}}{\substitution{\args{\funvalue}}{\vrootOf{\overline{\vtree}}}}} %\!\!\!\!\!\!\!\!\!
+	\end{array}
+ }{
+	\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e(\overline{\e})}
+}
+\end{array}
+\end{array}$}
+} 
+\vspace{-0.1cm}
+\caption{Big-step operational semantics for expression evaluation from \cite{Scafi} (auxiliary rules for expression evaluation failure).} \label{fig:fscafisemanticsFAIL}
+\end{figure}
+
 
 The semantics of \FSCAFI is shown in figure \ref{fig:fscafisemantics}. Like the field calculus sematic it follows the same notation and the result of the execution is a value-tree. It also uses the same ausiliary functions. Unlike the field calculus semantics the expression are evaluated against an additional deviced id $\deviceId'$ which is used by the $\mathtt{foldhood}$-expressions to evaluate against a neighbour.
 
@@ -233,4 +319,117 @@ Rule \ruleNameSize{[E-REP]}  models the evaluation of $\mathtt{rep}$-expressions
 
 Rules \ruleNameSize{[E-NBR]} and \ruleNameSize{[E-NBR-LOC]} both models the evaluation of $\mathtt{nbr}$-expressions, the former in the case that the computation is currently happening against a neightbour, the latter in case is happening against the executing device. In the first case the computed value is read from the value-tree environment, in the second case is computed recursively.
 
-Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expressions. The expression $\e_3$ is computed against the executing device and against each network and the computed values are combined with the $\e_2$ function with an empty value-tree environment.
+Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expressions. The expression $\e_3$ is computed against the executing device and against each network and the computed values are combined with the $\e_2$ function with an empty value-tree environment. For the evaluation of $\mathtt{foldhood}$ an additional set of rules, in figure \ref{fig:fscafisemanticsFAIL}, are required to handle the failures deriving by not aligned devices. The derive judgements for the failure cases are in the form $\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e}$ which means that expression $\e$ evaluation fails on the device $\deviceId$ against neightbour $\deviceId'$ with respect to the value-tree environment $\Trees$ and sensor state $\senstate$. The rule \ruleNameSize{[E-NBR-FAIL]} models the evaluation of an $\mathtt{nbr}$-expression against a non-aligned device, which results in a failure. Rule \ruleNameSize{[E-R-APP-FAIL]} models the failure on the evaluation of a built-in operators which is a relational sensor computing against a non-aligned device. Finally rules \ruleNameSize{[E-APP-ARG-FAIL]} and \ruleNameSize{[E-D-APP-FAIL]} model the propagation of failures when evaluating function application, the former handles failures in the evaluation of the arguments, the latter handles failure in the evaluation of the function.
+
+\begin{figure}[!t]{
+ \framebox[1\textwidth]{
+ $\begin{array}{l}
+ 
+ \textbf{Network configurations and action labels:}\\
+\begin{array}{lcl@{\hspace{7.6cm}}r}
+%
+\Field & \BNFcce &  \envmap{\overline\deviceId}{\overline\Trees}    &   {\footnotesize \mbox{computational field}} \\
+\Topo & \BNFcce &  \envmap{\overline\deviceId}{\overline\devset}    &   {\footnotesize \mbox{topology}} \\
+\Sens & \BNFcce &  \envmap{\overline\deviceId}{\overline\senstate}    &   {\footnotesize \mbox{sensors-map}} \\
+\Envi & \BNFcce &  \EnviS{\Topo}{\Sens}    &   {\footnotesize \mbox{environment}} \\
+\Cfg & \BNFcce &  \SystS{\Envi}{\Field}    &   {\footnotesize \mbox{network configuration}} \\
+\act & \BNFcce &  \deviceId \;\BNFmid\; \envact    &   {\footnotesize \mbox{action label}} \\
+%
+\end{array}\\
+\hline\\[-8pt]
+\textbf{Environment well-formedness:}\\
+\begin{array}{l}
+%
+\wfn{\EnviS{\Topo}{\Sens}} \textrm{~~holds if $\Topo,\Sens$ have same domain, and $\Topo$'s values do not escape it.}
+\\
+\end{array}\\
+\hline\\[-8pt]
+\textbf{Transition rules for network evolution:} \hfill
+  \boxed{\nettran{\Cfg}{\act}{\Cfg}}
+  \\[0.2cm]
+\vspace{0.5cm}
+\begin{array}{c}
+\netopsemRule{N-FIR}{ \quad
+                 \Envi=\EnviS{\Topo}{\Sens}
+                   \quad \Topo(\deviceId)= \overline\deviceId 
+                  \quad \bsopsem{\deviceId,\deviceId}{\filter_\deviceId(\Field)(\deviceId)}{\Sens(\deviceId)}{\emain}{\vtree}
+                  \quad
+                 \Field_1=\envmap{\overline\deviceId}{\{\envmap{\deviceId}{\vtree}\}}
+                 }{
+                 \nettran{\SystS{\Envi}{\Field}}{\deviceId}{\SystS{\Envi}{\mapupdate{\filter_\deviceId(\Field)}{\Field_1}}}
+                 }
+\skiptransition
+\netopsemRule{N-ENV}
+                 {\qquad \wfn{\Envi'}\qquad \Envi'=\EnviS{\Topo}{\envmap{\overline\deviceId}{\overline\senstate}} \qquad
+                  
+                  \Field_0=\envmap{\overline\deviceId}{\emptyset}
+                 }
+                 {\nettran{\SystS{\Envi}{\Field}}{\envact}{\SystS{\Envi'}{\mapupdate{\Field_0}{\Field}}}
+                 }\\[-10pt]
+\end{array}\\
+%
+%
+%
+\end{array}$}
+} 
+ \caption{Small-step operational semantics for network evolution.} \label{fig:fscafinetworkSemantics}
+\end{figure}
+
+Figure \ref{fig:fscafinetworkSemantics} defines the operational semantics of whole networks. 
+
+\section{Scafi and HFC semantics alignment}
+
+\begin{figure}[!t]
+\centering
+\centerline{\framebox[\textwidth]{$
+\begin{array}{ccc}
+\HFC{} && \FSCAFI{} \\
+\defK \; \fname (\overline{\xname}) \; \{\e\} &\longleftrightarrow& \defK \; \fname (\overline{\xname}) \; \eqSymK{\e} \\
+(\overline{\xname}) \; \toSym{\name} \; \e &\longleftrightarrow& (\overline{\xname}) \; \toSymKtag{\name}{\e} \\
+\foldK(\e, \e, \e) &\longleftrightarrow& \foldK(\e)(\e)\{\e\}
+\end{array}
+$}
+}
+\caption{Informal description of the bidirectional translation between \HFC{} and \FSCAFI{} from \cite{Scafi}.} \label{fig:fscafitranslation}
+\end{figure}
+
+A \FSCAFI program can be translated into a \HFC{} program and viceversa following simple translation rules shown in figure \ref{fig:fscafitranslation}, assuming the existence of a $\foldK$ built-in function for HFC equivalent to the $\foldK$ operator of \FSCAFI. Those rules don't preserve type-safety and behavior for all programs, however they are preserved for a fragment of the two languages, called respectively HFC' and \textit{Aligned} \FSCAFI. HFC' is obtained by applying three restriction on how field values can be processed:
+\begin{description}
+	\item[R1]
+	Expressions of neighbouring type can only be aggregated to local values with a $\foldK$ operator if they do not capture variables of neighbouring types; so that, e.g., aggregating arguments of neighbouring type is never allowed.
+	\item[R2]
+	Functions $\funvalue$ with arguments of neighbouring type have to return a neighbouring type.
+	\item[R3]
+	Built-in functions need to be pointwise or aggregating on neighbouring values.
+\end{description}
+The reason behind the first rule are visible in the following example:
+\begin{lstlisting}[]
+def wrong_avghood(x) = {
+  foldhood(0, +, x) / foldhood(0, +, 1)
+}
+wrong_avghood(nbr{sns-temp()})
+\end{lstlisting}
+and its translation in  \FSCAFI:
+\begin{lstlisting}[]
+def wrong_avghood(x) = @@{
+  foldhood(0)(+){x} / foldhood(0)(+){1}
+}
+wrong_avghood(nbr{sns-temp()})
+\end{lstlisting}
+The \HFC{} program computes the average temperature of neighbours while the \FSCAFI{} program is equivalent to the program $\nbrK\{\texttt{sns-temp}()\}$. In the \FSCAFI program if the computation is happening against a neighbour $\deviceId'$ only that temperature $\mathtt{t}$ is used as argument of the function, then it simply compute $nt/n = t$ where $n$ is the number of neighbours. In Scafi a simple solution to write this program is to make $\xname$ a by-name parameter.
+
+The reason for the the second restriction is exemplified in the following program, in which if and branch are both implemented in terms of the $\mathtt{mux}$ built-in function:
+\begin{lstlisting}[]
+def wrong_ignore(x) = { 1 }
+foldhood(0, +, if (sns-temp() > 0) { wrong_ignore(nbr{sns-temp()}) } { 1 } )
+\end{lstlisting}
+and its translation in  \FSCAFI{}
+\begin{lstlisting}[]
+def wrong_ignore(x) = @@{ 1 }
+foldhood(0)(+){ branch (sns-temp() > 0) { wrong_ignore(nbr{sns-temp()}) } { 1 } }
+\end{lstlisting}
+The \HFC{} program computes the number of neighbours while the \FSCAFI{} program in case the executing device has a positive temperatures counts only the number of neighbour with positive temperature since the fooldhood evaluation fail against the others.
+
+The reason behind the third rule is exaplained by considering for example a buil-in function $\mathtt{sorthood}$ which rearranges values $\fvalue(\deviceId)$ in increasing order of neighbour identifiers $\deviceId$. So given a neighbouring value $\fvalue = \envmap{\overline\deviceId}{\overline\lvalue}$ and assuming $\deviceId_1 \leq \ldots \leq \deviceId_n$ it returns a neighbouring value $\fvalue' = \envmap{\deviceId_1}{\lvalue_{\pi_1}}, \ldots, \envmap{\deviceId_n}{\lvalue_{\pi_n}}$. this function is conceivable in \HFC{} but it's impossible to implement in \FSCAFI{}.
+
+Those restriction rules can be formalized in \FSCAFI{} by a new set of more restrictive typing rules, obtaining a fragment of the language called \textit{Aligned} \FSCAFI{}. It can be proved \cite{Scafi} that a well-typed program of one of the fragments can be transformed into a well-type program of the other with the same behavior. It can also be proved that Aligned \FSCAFI{} is Turing universal and all the base programming patterns provided in \cite{SelfStabilizing} for designing self-stabilising applications can be rewritten to fit into the fragment.

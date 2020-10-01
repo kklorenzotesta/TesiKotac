@@ -273,6 +273,76 @@ Rule \ruleNameSize{[E-IF]} models a branching expression by computing and aligni
 
 Rule \ruleNameSize{[E-SHARE]} models a $\mathtt{share}$-expression, which collects the neighbouring values of the last computations of the expression to form the field $\fvalue$. In case there is not a value for the device $\deviceId$ the root of the evaluation of $\e_1$ is used. Then $\fvalue$ is substituted to $\xname$ in the evaluation of $\e_2$.
 
+\begin{figure}[!t]{
+ \framebox[1\textwidth]{
+ $\begin{array}{l}
+ %%%  SYNTAX
+ \textbf{System configurations and action labels:}\\
+\begin{array}{lcl@{\hspace{7.5cm}}r}
+%
+\Field & \BNFcce &  \envmap{\overline\deviceId}{\overline\Trees}    &   {\footnotesize \mbox{status field}} \\
+\Topo & \BNFcce &  \envmap{\overline\deviceId}{\overline\devset}    &   {\footnotesize \mbox{topology}} \\
+\Sens & \BNFcce &  \envmap{\overline\deviceId}{\overline\senstate}    &   {\footnotesize \mbox{sensors-map}} \\
+\Envi & \BNFcce &  \EnviS{\Topo}{\Sens}    &   {\footnotesize \mbox{environment}} \\
+\Cfg & \BNFcce &  \SystS{\Envi}{\Field}    &   {\footnotesize \mbox{network configuration}} \\
+\act & \BNFcce &  \deviceId \;\BNFmid\; \envact    &   {\footnotesize \mbox{action label}} \\
+%
+\end{array}\\
+\hline\\[-8pt]
+\textbf{Environment well-formedness:}\\
+\begin{array}{l}
+%
+\wfn{\EnviS{\Topo}{\Sens}} \textrm{~~holds iff {$\domof{\Topo}=\domof{\Sens}$ and $\Topo(\deviceId) \subseteq \domof{\Sens}$ for all $\deviceId \in \domof{\Sens}$.}}
+\\
+\end{array}\\
+\hline\\[-8pt]
+%%%%%%%%%%
+%%%  REDUCTION RULES
+\textbf{Transition rules for network evolution:} \hfill
+  \boxed{\nettran{\Cfg}{\act}{\Cfg}}
+  \\[0.2cm]
+\vspace{0.5cm}
+\begin{array}{c}
+\netopsemRule{N-FIR}
+                 {\quad \Envi=\EnviS{\Topo}{\Sens}
+                   \quad \Topo(\deviceId)= \overline\deviceId 
+                  \quad {\bsopsem{\deviceId}{\filter(\Field)(\deviceId)}{\Sens(\deviceId)}{\emain}{\vtree}}
+                  \quad
+                 \Field_1=\envmap{\overline\deviceId}{\{\envmap{\deviceId}{\vtree}\}}}
+                 {\nettran{\SystS{\Envi}{\Field}}{\deviceId}{\SystS{\Envi}{\mapupdate{\filter(\Field)}{\Field_1}}}%\nopsem{\EnviS{\Topo}{\Sens}}{\Field}{\deviceId}{\mapupdate{\Field}{\deviceId}{\vtree}}
+                 }
+\skiptransition
+\netopsemRule{N-ENV}
+                 {\qquad \wfn{\Envi'}\qquad \Envi'=\EnviS{\Topo}{\envmap{\overline\deviceId}{\overline\senstate}} \qquad
+                  %\bsopsem{\senstate_1}{\emptyset}{\emain}{\vtree_1}\quad\cdots\quad\bsopsem{\senstate_n}{\emptyset}{\emain}{\vtree_n} \qquad
+                  \Field_0=\envmap{\overline\deviceId}{\emptyset}
+                 }
+                 {\nettran{\SystS{\Envi}{\Field}}{\envact}{\SystS{\Envi'}{\mapupdate{\Field_0}{\Field}}}
+                 }\\[-10pt]
+\end{array}\\
+%\textbf{Initial device state $\initialvtree$:}\\[0.2cm]
+%\begin{array}{c}
+%
+%\qquad\qquad\netopsemRule{Init}
+%                 {\senstate_0(\snsname)=\initialOf{\typeof{\snsname}}}
+%                 {\bsopsem{\senstate_0}{\emptyset}{\emain}{\initialvtree}}
+%
+%\end{array}
+%
+\end{array}$}
+} %%%\capskip
+ \caption{Small-step operational semantics for network evolution.} \label{fig:networkSemantics}
+\end{figure}
+
+Figure \ref{fig:networkSemantics} defines the operational semantics for the evaluation of whole networks, i.e. it models the distributed evolution of the computational fields over time. $\Field$ is map from device identifiers to value-tree environments, modelling the overhall status of the devices at a given time. $\Topo$ models the topology of the network as a map from device identifiers to sets of identifiers of the neigbouring devices. $\Sens$ models the sensors state as map from device identifiers to the local sensor state of the device. $\Envi$ is a couple of topology and sensor state modelling the system's environment. $\Cfg$ models the whole network configuration as a couple of an environment $\Envi$ and a status field $\Field$.
+
+The network semantics is given in terms of small-steps transitions of the king $\nettran{\Cfg}{\act}{\Cfg'}$ where $\act$ can be either a device identifier $\deviceId$ representing its firing or the label $\envact$ representing any environment change. The following notation is used.  $\filter(\cdot)$ is a filtering operation that clears old stored values from the value-tree environements in $\Field$, usually based on space/time tags attached to value-trees. $\envmap{\overline\deviceId}{\Trees}$ denote the map sending each device identifier in $\overline\deviceId$ to the same value-tree environment $\Trees$. $\mapupdate{\Trees_0}{\Trees_1}$ denote the value-tree environment with domain $\domof{\Trees_0} \cup \domof{\Trees_1}$ coinciding with $\Trees_1$ in the domain of $\Trees_1$ and with $\Trees_0$ otherwise. $\Field_0[\Field_1]$ denotes the status field with the same domain as $\Field_0$ made of $\envmap{\deviceId}{\mapupdate{\Field_0(\deviceId)}{\Field_1(\deviceId)}}$ for all $\deviceId$ in the domain of $\Field_1$, $\envmap{\deviceId}{\Field_0(\deviceId)}$ otherwise.
+
+Rule \ruleNameSize{[N-FIR]} models a computational round at a device $\deviceId$. From the filtered local value-tree environement $\filter(\Field)(\deviceId)$ determines the single device semantics obtaining the value-tree $\vtree$ and use it to update the value-tree environment of $\deviceId$'s neighbours.
+
+Rule \ruleNameSize{[N-ENV]} models a change of the environment $\Envi$ to a new well-formed environment $\Envi'$. The devices not appearing in the new environment are removed from the status field and new devices are mapped to the empty context.
+
+
 \section{Aggregate Programming Layers}
 
 TODO add figure
