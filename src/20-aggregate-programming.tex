@@ -331,7 +331,7 @@ Rule \ruleNameSize{[E-SHARE]} models a $\mathtt{share}$-expression, which collec
 %
 \end{array}$}
 } %%%\capskip
- \caption{Small-step operational semantics for network evolution.} \label{fig:networkSemantics}
+ \caption{Small-step operational semantics for network evolution from \cite{FieldCalculus}.} \label{fig:networkSemantics}
 \end{figure}
 
 Figure \ref{fig:networkSemantics} defines the operational semantics for the evaluation of whole networks, i.e. it models the distributed evolution of the computational fields over time. $\Field$ is map from device identifiers to value-tree environments, modelling the overhall status of the devices at a given time. $\Topo$ models the topology of the network as a map from device identifiers to sets of identifiers of the neigbouring devices. $\Sens$ models the sensors state as map from device identifiers to the local sensor state of the device. $\Envi$ is a couple of topology and sensor state modelling the system's environment. $\Cfg$ models the whole network configuration as a couple of an environment $\Envi$ and a status field $\Field$.

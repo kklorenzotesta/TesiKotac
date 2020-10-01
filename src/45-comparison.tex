@@ -372,10 +372,11 @@ Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expres
 %
 \end{array}$}
 } 
- \caption{Small-step operational semantics for network evolution.} \label{fig:fscafinetworkSemantics}
+ \caption{Small-step operational semantics for network evolution from \cite{Scafi}.} \label{fig:fscafinetworkSemantics}
 \end{figure}
 
-Figure \ref{fig:fscafinetworkSemantics} defines the operational semantics of whole networks. 
+Figure \ref{fig:fscafinetworkSemantics} defines the operational semantics of whole networks. It uses the same syntax of the \HFC{} network semantics and the same rules. 
+Rule \ruleNameSize{[N-FIR]} models a computational round on device $\deviceId$ by computing its local semantics on the filtered value-tree environment obtaining a value-tree $\vtree$, which is used to update the network configuration of the neighbours. Rule \ruleNameSize{[N-ENV]} models an environment change from $\Envi$ to a new well-formed environment $\Envi'$, the computational field is updated by removed the devices that are not part of the new environment and assigning an empty context to the new devices.
 
 \section{Scafi and HFC semantics alignment}
 
