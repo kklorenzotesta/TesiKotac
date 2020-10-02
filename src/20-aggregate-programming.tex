@@ -23,7 +23,7 @@ The field calculus is a tiny functional language based on a set of abstract oper
 
 \begin{figure}[t]
 \centering
-\centerline{\framebox[\linewidth]{$
+\centerline{$
         \begin{array}{lcl@{\hspace{18mm}}r}
                 \PROGRAM & \BNFcce & \overline{\FUNCTION}  \; \e
                 &{ \mbox{\footnotesize program}}
@@ -48,7 +48,7 @@ The field calculus is a tiny functional language based on a set of abstract oper
                 &{ \mbox{\footnotesize function value}}
                 \\[3pt]
         \end{array}
-        $}
+        $
 }
 \caption{Abstract syntax of the field calculus from \cite{FieldCalculus, Share}} \label{fig:fcsyntax}
 \end{figure}
@@ -78,7 +78,6 @@ A \textit{function value} $\funvalue$ can be a built-in function $\bname$, a dec
 \section{Field Calculus Semantic}
 
 \begin{figure}[!t]{
- \framebox[1\textwidth]{
  $\begin{array}{l}
  \textbf{Value-trees and value-tree environments:}\\
 \begin{array}{lcl@{\hspace{6.8cm}}r}
@@ -252,7 +251,7 @@ A \textit{function value} $\funvalue$ can be a built-in function $\bname$, a dec
 	\bsopsem{\deviceId}{\Trees}{\senstate}{\shareK(\e_1)\{(\xname) \; \ftoSym \; \e_2\}}{\mkvt{\vrootOf{\vtree_{2}}}{\vtree_1,\vtree_2}}
 }
 \end{array}
-\end{array}$}
+\end{array}$
 }
  \caption{Big-step operational semantics adapted from \cite{FieldCalculus}.} \label{fig:deviceSemantics}
 \end{figure}
@@ -274,7 +273,6 @@ Rule \ruleNameSize{[E-IF]} models a branching expression by computing and aligni
 Rule \ruleNameSize{[E-SHARE]} models a $\mathtt{share}$-expression, which collects the neighbouring values of the last computations of the expression to form the field $\fvalue$. In case there is not a value for the device $\deviceId$ the root of the evaluation of $\e_1$ is used. Then $\fvalue$ is substituted to $\xname$ in the evaluation of $\e_2$.
 
 \begin{figure}[!t]{
- \framebox[1\textwidth]{
  $\begin{array}{l}
  %%%  SYNTAX
  \textbf{System configurations and action labels:}\\
@@ -329,7 +327,7 @@ Rule \ruleNameSize{[E-SHARE]} models a $\mathtt{share}$-expression, which collec
 %
 %\end{array}
 %
-\end{array}$}
+\end{array}$
 } %%%\capskip
  \caption{Small-step operational semantics for network evolution from \cite{FieldCalculus}.} \label{fig:networkSemantics}
 \end{figure}

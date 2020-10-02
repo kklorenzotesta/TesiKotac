@@ -4,7 +4,7 @@ Since Scafi is based on the notion of computations against a neighbour instead o
 
 \begin{figure}[t]
 \centering
-\centerline{\framebox[\textwidth]{$
+\centerline{$
 \begin{array}{l@{\hspace{1mm}}c@{\hspace{1mm}}l@{\hspace{-8mm}}r}
         \PROGRAM & \BNFcce & \overline{\FUNCTION}  \; \e
                                                                                                                                                                                                         &   {\footnotesize \mbox{program}} \\[3pt]
@@ -18,7 +18,7 @@ Since Scafi is based on the notion of computations against a neighbour instead o
         \funvalue & \BNFcce & \bname \; \BNFmid \; \fname \; \BNFmid \; (\overline{\xname}) \; \toSymKtag{\name}{\e}
                                                                                                                                                                                                         &   {\footnotesize\mbox{function value}} \\
 \end{array}
-$}
+$
 }
 \caption{Syntax of \FSCAFI{} from \cite{Scafi}}
 \label{fig:fscafisyntax}
@@ -29,7 +29,6 @@ The syntax of \FSCAFI is shown in figure \ref{fig:fscafisyntax}, it focus on the
 A value can be either a \textit{data value} $\dc(\overline{\anyvalue})$ consisting of a \textit{data constructor} $\dc$ applied to a sequence of values $\overline{\anyvalue}$, or a \textit{function value} $\funvalue$. A function value can be the name of a built-in function $\bname$, the name of a user defined function $\fname$, or an anonymous function $(\overline{\xname}) \; \toSymKtag{\name}{\e}$ where $\overline{\xname}$ are the formal parameters, $\e$ the body of the function and $\name$ a \textit{tag} that uniquely identifies the function and doesn't occours in the source program. A built-in function can be a \textit{pure operator} like the $\mathtt{mux}$ function or mathematical operators, a \textit{sensor} which depends on the environmental conditions of the computing device, or a \textit{relational sensor} which is a sensor depending additionally on a neighbouring device which the computation is happening against.
 
 \begin{figure}[!t]{
- \framebox[1\textwidth]{
  $\begin{array}{l}
 \textbf{Value-trees  
 and value-tree environments:}\\
@@ -218,14 +217,13 @@ and value-tree environments:}\\
 \bsopsem{\deviceId,\deviceId'}{\Trees}{\senstate}{\foldK(\e_1)(\e_2)\{\e_3\}}{\mkvtree{}{\vrootOf{\vtree^{m+1}}}{\vtree^1, \vtree_0, \vtree_1}}
 }
 \end{array}
-\end{array}$}
+\end{array}$
 } 
 \vspace{-0.1cm}
  \caption{Big-step operational semantics for expression evaluation from \cite{Scafi}.} \label{fig:fscafisemantics}
 \end{figure}
 
 \begin{figure}[!t]{
- \framebox[1\textwidth]{
  $\begin{array}{l}
 \textbf{Auxiliary rules for expression evaluation failure:} \hfill
    %\qquad\qquad\qquad\quad\;\;
@@ -302,7 +300,7 @@ and value-tree environments:}\\
 	\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e(\overline{\e})}
 }
 \end{array}
-\end{array}$}
+\end{array}$
 } 
 \vspace{-0.1cm}
 \caption{Big-step operational semantics for expression evaluation from \cite{Scafi} (auxiliary rules for expression evaluation failure).} \label{fig:fscafisemanticsFAIL}
@@ -322,7 +320,6 @@ Rules \ruleNameSize{[E-NBR]} and \ruleNameSize{[E-NBR-LOC]} both models the eval
 Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expressions. The expression $\e_3$ is computed against the executing device and against each network and the computed values are combined with the $\e_2$ function with an empty value-tree environment. For the evaluation of $\mathtt{foldhood}$ an additional set of rules, in figure \ref{fig:fscafisemanticsFAIL}, are required to handle the failures deriving by not aligned devices. The derive judgements for the failure cases are in the form $\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e}$ which means that expression $\e$ evaluation fails on the device $\deviceId$ against neightbour $\deviceId'$ with respect to the value-tree environment $\Trees$ and sensor state $\senstate$. The rule \ruleNameSize{[E-NBR-FAIL]} models the evaluation of an $\mathtt{nbr}$-expression against a non-aligned device, which results in a failure. Rule \ruleNameSize{[E-R-APP-FAIL]} models the failure on the evaluation of a built-in operators which is a relational sensor computing against a non-aligned device. Finally rules \ruleNameSize{[E-APP-ARG-FAIL]} and \ruleNameSize{[E-D-APP-FAIL]} model the propagation of failures when evaluating function application, the former handles failures in the evaluation of the arguments, the latter handles failure in the evaluation of the function.
 
 \begin{figure}[!t]{
- \framebox[1\textwidth]{
  $\begin{array}{l}
  
  \textbf{Network configurations and action labels:}\\
@@ -370,7 +367,7 @@ Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expres
 %
 %
 %
-\end{array}$}
+\end{array}$
 } 
  \caption{Small-step operational semantics for network evolution from \cite{Scafi}.} \label{fig:fscafinetworkSemantics}
 \end{figure}
@@ -382,14 +379,14 @@ Rule \ruleNameSize{[N-FIR]} models a computational round on device $\deviceId$ b
 
 \begin{figure}[!t]
 \centering
-\centerline{\framebox[\textwidth]{$
+\centerline{$
 \begin{array}{ccc}
 \HFC{} && \FSCAFI{} \\
 \defK \; \fname (\overline{\xname}) \; \{\e\} &\longleftrightarrow& \defK \; \fname (\overline{\xname}) \; \eqSymK{\e} \\
 (\overline{\xname}) \; \toSym{\name} \; \e &\longleftrightarrow& (\overline{\xname}) \; \toSymKtag{\name}{\e} \\
 \foldK(\e, \e, \e) &\longleftrightarrow& \foldK(\e)(\e)\{\e\}
 \end{array}
-$}
+$
 }
 \caption{Informal description of the bidirectional translation between \HFC{} and \FSCAFI{} from \cite{Scafi}.} \label{fig:fscafitranslation}
 \end{figure}
