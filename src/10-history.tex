@@ -1,8 +1,119 @@
 The foundation for the aggregate programming can be found from a number of prior approaches, both formal and pragmatic, to the engineering of complex coordination for distributed systems, proposed under the umbrella of field-based coordination, and culminating into the \textit{field calculus} \cite{Survey}.
 
+\begin{figure}
+\tikzset{
+  font={\fontsize{9pt}{12}\selectfont}}
+\begin{tikzpicture}[->,node distance=0.8cm and 1.6cm, node/.style={rectangle,draw}, node2/.style={draw}]
+  \node[node,text width=3cm] (1) [align=center] {Generative \\ communication};
+  \node[node,text width=3cm] (2) [below=0.8cm of 1,align=center] {Tuple-based \\ coordination models};
+  \node[node,text width=3cm] (3) [below=0.8cm of 2,align=center] {Programmable\\ coordination rules};
+  \node[node,text width=3cm] (8) [below=0.8cm of 3,align=center] {Distributed,\\ mobile\\coordination};
+  \node[node,text width=3cm] (4) [below=1.8cm of 8,align=center] {Self-organising\\ coordination};
+  \node[node,text width=3cm] (5) [below=of 4,align=center] {Field-based\\ coordination};
+  \node[node,text width=3cm] (6) [right=1.8cm of 5,align=center] {Spatial \\ Computing};
+  \node[node,text width=3cm, ultra thick] (7) [below right=3cm and -0.5cm of 5, align=center] {Aggregate \\ Computing};
+  
+  \node[node2,text width=1.5cm] (b2) [left=0.8cm of 4,align=center] {Chemistry};
+  \node[node2,text width=1.5cm] (b1) [above=0.3 of b2,align=center] {Biology};
+  \node[node2,text width=1.5cm] (b3) [left=of 4,below=0.3cm of b2,align=center] {Ecology};
+  \node[node2,text width=1.5cm] (b4) [left=0.8cm of 5,align=center] {Physics};
+  
+  \node[node,text width=1.7cm] (s1) [above=of 6,align=center] {Spatial\\ pattern \\ languages};
+  \node[node,text width=1.7cm] (s2) [above=1.5cm of s1,align=center] {Spatial \\ streams};
+  \node[node,text width=1.7cm] (s3) [right=0.1cm of 1, above = 2.5cm of s2,align=center] {Network\\
+  abstraction};
+  
+  \node[node,text width=1.7cm] (cas) [left = 1cm of 7,align=center] {Collective\\adaptive\\systems};
+  \node[node,text width=1.7cm] (mas) [above = 0.6cm of cas,align=center] {MAS\\coordination};
+  
+  % LABELS
+  \node[left] at (1.west) [align=left] {Linda~\cite{Linda} };
+  \node[left] at (2.west) [align=right] {
+JavaSpaces \cite{freeman1999javaspaces}\\
+ TSpaces~\cite{TSpaces}
+  };  
+  
+  \node[left] at (3.west) [align=right] {Shared Prolog \cite{SharedProlog}\\
+  Law-Gov. Inter.~\cite{LawGov}\\
+  MARS~\cite{Mars}\\
+  ReSpecT~\cite{Respect}
+  };
+
+  \node[left] at (8.west) [align=right] {
+LogOp~\cite{logop}, Scope~\cite{merrick2000scoped}\\
+  Klaim~\cite{Klaim}, Lime~\cite{Lime}   
+  };  
+  
+  \node[right] at ([xshift=-1.6cm,yshift=0.7cm]4.north east) [align=left] {$\sigma\tau$-Linda~\cite{DBLP:conf/coordination/ViroliPB12}\\
+  SwarmLinda~\cite{SwarmLinda}\\
+  Biochemical TSs~\cite{VCMZ-TAAS2011}  
+  };
+  \node[right] at ([xshift=-1.4cm,yshift=0.2cm]5.north east) [align=left] {TOTA~\cite{tota}};
+  \node[right] at ([xshift=-2cm,yshift=-1cm]6.east) [align=right] {Proto~\cite{Proto}\\
+  MGS~\cite{GiavittoMGS02,GiavittoMGS05}
+  };
+  \node[right] at ([xshift=-1.4cm,yshift=1.1cm]s1.east) [align=right] {GPL~\cite{GrowingPoint}\\
+  OSL~\cite{nagpalphd}};
+  \node[right] at ([xshift=-2.2cm,yshift=0.8cm]s3.north) [align=right] {Hood~\cite{Hood} \\ 
+  Abstract Regions~\cite{welsh2004abstract-regions} \\ 
+  Paintable comp.~\cite{butera} \\
+  Meld~\cite{Meld}};
+  \node[right] at ([xshift=-3.2cm,yshift=-0.1cm]cas.west) [align=right] {
+  SCEL~\cite{DBLP:journals/taas/NicolaLPT14}\\
+  Helena~\cite{hennicker2014helena}\\
+  DEECo~\cite{bures2013deeco}\\
+  GCM/ProActive~\cite{baude2015gcm-proactive}
+  };
+  \node[right] at ([xshift=-0.7cm,yshift=0.45cm]mas.north west) [align=right] {
+  E-institutions~\cite{esteva2001formal-spec-einstitutions}\\
+  $\mathcal{M}oise^+$~\cite{hubner2007moise-plus}
+  };
+  \node[right] at ([xshift=-1.1cm,yshift=0.8cm]s2.north) [align=right] {
+  TinyDB~\cite{TinyDB}\\ Cougar~\cite{Yao02thecougar} \\ TinyLime~\cite{Curino05mobiledata}\\ Regiment~\cite{regiment}
+  };
+  \node[right] at ([xshift=-3cm,yshift=-0.8cm]7.east) [align=center] {
+  Field Calculus~\cite{FieldCalculus}
+  };
+  
+  \path[every node/.style={font=\sffamily\small}]
+    (1) edge [] node [] {} (2)
+    (2) edge [] node [] {} (3)
+    (3) edge [] node [] {} (8)
+    (8) edge [] node [] {} (4)
+    (4) edge [] node [] {} (5)
+    (5) edge [] node [] {} (6)
+    (5) edge [] node [] {} (7)
+    (6) edge [] node [] {} (7)
+    
+    (b1) edge [] node [] {} (4)
+    (b2) edge [] node [] {} (4)
+    (b3) edge [] node [] {} (4)
+    (b4) edge [] node [] {} (5)
+
+    (s1) edge [] node [] {} (6)
+    (s2) (s2.south west) edge [bend right=10] node [] {} (6.north west) + (90:0.2cm)
+    (s3) (s3.south west) edge [bend right=10] node [] {} (6.north west)
+
+    (cas)  edge [] node [] {} (7)
+    (mas)  edge [] node [] {} (cas)
+    ;
+        
+%    (0e) edge [bend left=25] node [left] {$a_0$} (10)
+%    (10) edge [bend left=25] node [right] {$b_0$} (0e)
+%    (10) edge [] node [above] {$a_1$} (001)
+%    (001) edge [] node [above] {$b_0$} (01)
+%    (001) edge [] node [left,pos=0.3] {$b_1$} (00)
+%    (00) edge [] node [below] {$b_0$} (0e)
+%    (01) edge [bend right=15] node [below,pos=0.2] {$b_1$} (0e)
+    ;
+\end{tikzpicture}
+\caption{Overview of research threads leading from coordination to field calculus and aggregate computing, highlighting some bibliographic references, from \cite{Survey}}
+\label{fig:past-summary} 
+\end{figure}
+
 Many coordination models were based on the concept of a shared data space where the processes of a parallel computing system can write and read information, enabling so-called \textit{generative communication}. A number of approches to generative communication derives from Linda \cite{Linda}, called tuple-based coordination models. Linda is based on the idea of processes sharing information and synchronise by suspending writing and retrieving of tuples (chunks of heterogeneous knowledge) from a shared tuple-space. The data could be queried through tuple templates, i.e. partial representations of the structure and content matching. No information about the sender or the space itself is required in order for communication to happen, obtaining a decoupled communication. From this idea logical tuple-space models has been created, where the processes share first-order logic tuples and tuple spaces can be programmed as first-order logic theories. An exemple of such systems is Shared Prolog \cite{SharedProlog}, a framework for writing multi-processor Prolog systems. The innovative idea in those system was to equip the shared space with some form of application logic that can manipulate the data and the way that it can be accessed.
 
-Those approaches didn't focus on distributed systems but only on coordination of centralised local components. As software components became spread across the system network, so multiple tuple spaces can be distributed across the system environment and systems can start dealing with location and mobility, enabling expression of dynamic environment topologies \cite{Survey}. Therefore has been created systems like JavaSpaces \cite{freeman1999javaspaces} and TSpaces \cite{TSapces}, or systems dealing with the location of agents like Lime \cite{Lime} and Klaim \cite{Klaim}.
+Those approaches didn't focus on distributed systems but only on coordination of centralised local components. As software components became spread across the system network, so multiple tuple spaces can be distributed across the system environment and systems can start dealing with location and mobility, enabling expression of dynamic environment topologies \cite{Survey}. Therefore has been created systems like JavaSpaces \cite{freeman1999javaspaces} and TSpaces \cite{TSpaces}, or systems dealing with the location of agents like Lime \cite{Lime} and Klaim \cite{Klaim}.
 
 In order to deal with the problems of openness (environment changes, faults and interactions), large scate (huge number of agents) and intrinsic adaptiveness (ability to intercept events and react to them to guarantee system resilience) an approach of \textit{self-organizing coordination} is needed, where coordination abstractions handle "local" interactions only such that global and robust patterns of correct coordination behavior can emerge \cite{Survey}. For instance SwarmLinda \cite{SwarmLinda} is a tuple-based middleware that guarantees efficient retrieval of tuple by computational mechanisms inspired by the collective intelligence of swarms of ants.
 

@@ -343,9 +343,14 @@ Rule \ruleNameSize{[N-ENV]} models a change of the environment $\Envi$ to a new 
 
 \section{Aggregate Programming Layers}
 
-TODO add figure
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{imgs/layers.pdf}	
+\caption{Aggregate programmign abstraction layers from \cite{Aggregate01}. The software and hardware capabilities of particular devices are used to implement aggregate-level field calculus constructs. These constructs are used to implement a limited set of building-block coordination operations with provable resilience properties, which are then wrapped and combined together to produce a user-friendly API for developing situated IoT (Internet-of-Things) systems.}
+\label{fig:aglayers}
+\end{figure}
 
-From the field calculus the aggregate programming framework is built as a series of layers, visibles in figure TODO. The \textit{resilient coordination operators layer} defines using the operators of the field calculus a series of functions that hide the complexity of the basic operators and restric the language to a self-stabilising fragment  of the field calculus \cite{SelfStabilizing}. Then over this operators aggregate programming libraries provides reusable and flexible high level developer APIs, e.g. function for broadcasting values, to computed distances among devices, etc. The application code is then developed on the reusable blocks provided by the libraries.
+From the field calculus the aggregate programming framework is built as a series of layers, visibles in figure \ref{fig:aglayers}. The \textit{resilient coordination operators layer} defines using the operators of the field calculus a series of functions that hide the complexity of the basic operators and restric the language to a self-stabilising fragment  of the field calculus \cite{SelfStabilizing}. Then over this operators aggregate programming libraries provides reusable and flexible high level developer APIs, e.g. function for broadcasting values, to computed distances among devices, etc. The application code is then developed on the reusable blocks provided by the libraries.
 
 The resilient coordination layer defines in particular the following three operators:
 \begin{itemize}
