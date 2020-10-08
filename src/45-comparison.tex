@@ -1,6 +1,6 @@
-\section{Scafi semantic}
+\section{\Scafi{} semantic}
 
-Since Scafi is based on the notion of computations against a neighbour instead of neighbouring values it has different semantics from the higher order field calculus (\HFC) and its implementation Protelis. In order to formalize the semantic of Scafi a subset of it has been considered called \textit{Featherweight Scafi (\FSCAFI)} \cite{Scafi} and only the semantic of \FSCAFI has been considered. It has been proved that both \FSCAFI and \HFC{} can express programs that the other can't, but they have a non-empty intersection that can express all the self-stabilising build blocks.
+Since \Scafi{} is based on the notion of computations against a neighbour instead of neighbouring values it has different semantics from the higher order field calculus (\HFC) and its implementation Protelis. In order to formalize the semantic of \Scafi{} a subset of it has been considered called \textit{Featherweight \Scafi{} (\FSCAFI)} \cite{Scafi} and only the semantic of \FSCAFI has been considered. It has been proved that both \FSCAFI and \HFC{} can express programs that the other can't, but they have a non-empty intersection that can express all the self-stabilising build blocks.
 
 \begin{figure}[t]
 \centering
@@ -375,7 +375,7 @@ Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expres
 Figure \ref{fig:fscafinetworkSemantics} defines the operational semantics of whole networks. It uses the same syntax of the \HFC{} network semantics and the same rules. 
 Rule \ruleNameSize{[N-FIR]} models a computational round on device $\deviceId$ by computing its local semantics on the filtered value-tree environment obtaining a value-tree $\vtree$, which is used to update the network configuration of the neighbours. Rule \ruleNameSize{[N-ENV]} models an environment change from $\Envi$ to a new well-formed environment $\Envi'$, the computational field is updated by removed the devices that are not part of the new environment and assigning an empty context to the new devices.
 
-\section{Scafi and HFC semantics alignment}
+\section{\Scafi{} and HFC semantics alignment}
 
 \begin{figure}[!t]
 \centering
@@ -414,7 +414,7 @@ def wrong_avghood(x) = @@{
 }
 wrong_avghood(nbr{sns-temp()})
 \end{lstlisting}
-The \HFC{} program computes the average temperature of neighbours while the \FSCAFI{} program is equivalent to the program $\nbrK\{\texttt{sns-temp}()\}$. In the \FSCAFI program if the computation is happening against a neighbour $\deviceId'$ only that temperature $\mathtt{t}$ is used as argument of the function, then it simply compute $nt/n = t$ where $n$ is the number of neighbours. In Scafi a simple solution to write this program is to make $\xname$ a by-name parameter.
+The \HFC{} program computes the average temperature of neighbours while the \FSCAFI{} program is equivalent to the program $\nbrK\{\texttt{sns-temp}()\}$. In the \FSCAFI program if the computation is happening against a neighbour $\deviceId'$ only that temperature $\mathtt{t}$ is used as argument of the function, then it simply compute $nt/n = t$ where $n$ is the number of neighbours. In \Scafi{} a simple solution to write this program is to make $\xname$ a by-name parameter.
 
 The reason for the the second restriction is exemplified in the following program, in which if and branch are both implemented in terms of the $\mathtt{mux}$ built-in function:
 \begin{lstlisting}[]

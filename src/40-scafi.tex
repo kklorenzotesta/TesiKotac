@@ -1,6 +1,6 @@
-Scafi \cite{Scafi, scafiphd} is a library defining a Domain Specific Language that integrates the aggregate paradigm into the Scala programming language \cite{Scala}. Like Protelis it runs on the Java Virtual Machine but instead of defining its own language it take advantage of the Scala language and its expressive type system. Scafi unlike the others aggregate programming implementation doesn't have an explicit representation of fields but instead has a notion of "computation against a neighbour", i.e. a computation depending on the evaluation of the same expression by an alligned neighbour. This difference aims to provide an embedding of field computations into Scala more close to the host language. It also provides an integration with Akka \cite{Akka}, a Scala industry-ready actor framework for scalable and resilient message-driven applications.
+\Scafi{} \cite{ScafiFirst, Scafi} is a library defining a Domain Specific Language that integrates the aggregate paradigm into the Scala programming language \cite{Scala}. Like Protelis it runs on the Java Virtual Machine but instead of defining its own language it take advantage of the Scala language and its expressive type system. \Scafi{} unlike the others aggregate programming implementation doesn't have an explicit representation of fields but instead has a notion of "computation against a neighbour", i.e. a computation depending on the evaluation of the same expression by an alligned neighbour. This difference aims to provide an embedding of field computations into Scala more close to the host language. It also provides an integration with Akka \cite{Akka}, a Scala industry-ready actor framework for scalable and resilient message-driven applications.
 
-Scafi is an \textit{internal DSL} which means it provides its API on top of the host programming language, unlike Protelis which is an \textit{external DSL}, offering a standalone language. This means that developers doesn't need to learn a new language and the Scafi mantainers don't need to develop editing tools reusing instead the ones for the Scala language. There is also experimental evidence that Protelis programs require to delegate a significant part of the code to Java methods for code reuse or simplicity. This increases the complexity of development since the code in both languages must be keep coordinated.
+\Scafi{} is an \textit{internal DSL} which means it provides its API on top of the host programming language, unlike Protelis which is an \textit{external DSL}, offering a standalone language. This means that developers doesn't need to learn a new language and the \Scafi{} mantainers don't need to develop editing tools reusing instead the ones for the Scala language. There is also experimental evidence that Protelis programs require to delegate a significant part of the code to Java methods for code reuse or simplicity. This increases the complexity of development since the code in both languages must be keep coordinated.
 
 \begin{figure}[t]
 \begin{lstlisting}[language={scafi},frame=single]
@@ -21,10 +21,10 @@ trait Constructs {
   def nbrvar[A](name: NSNS): A
 }
 \end{lstlisting}
-\caption{Scafi constructs from \cite{Scafi}}\label{fig:scaficonstructs}
+\caption{\Scafi{} constructs from \cite{Scafi}}\label{fig:scaficonstructs}
 \end{figure}
 
-A Scafi program is a function that extends an implementation of the trait $\mathtt{Constructs}$, visible in figuera \ref{fig:scaficonstructs}, which provides all the aggregate programming basic constructs. 
+A \Scafi{} program is a function that extends an implementation of the trait $\mathtt{Constructs}$, visible in figuera \ref{fig:scaficonstructs}, which provides all the aggregate programming basic constructs. 
 
 The method $\mathtt{rep}[\mathtt{A}](\mathtt{init}: \texttt{=>} \mathtt{A})(\mathtt{fun}: (\mathtt{A}) \texttt{=>} \mathtt{A}): \mathtt{A}$ implements a $\mathtt{rep}$-expression of the field calculus, returning a value of type $\mathtt{A}$. $\mathtt{init}$ is a lazy expression computing the beginning value. At each round the $\mathtt{fun}$ unary function is applied to compute the new returned value from the last value.
 
@@ -46,7 +46,7 @@ def maxh(field: Double): Double = {
   foldhood(Double.NegativeInfinity)(Math.max(_,_)){ nbr(field) } 
 }
 \end{lstlisting}
-\caption{Examples of Scafi programs}\label{fig:scafiexample}
+\caption{Examples of \Scafi{} programs}\label{fig:scafiexample}
 \end{figure}
 
-Figure \ref{fig:scafiexample} shows some example of Scafi programs. The first function $\mathtt{count}$ counts the number of rounds executed by the device. The function $\mathtt{countNeighbours}$ counts how many neighbours has the device, simply by adding one for each device. The function $\mathtt{maxh}$ returns the maximum value $\mathtt{field}$ with which is called acroos neighbours. This is accomplished by calling $\mathtt{nbr}$ against each neighbour and combining the values by the Scala $\mathtt{Math.max}$ function.
+Figure \ref{fig:scafiexample} shows some example of \Scafi{} programs. The first function $\mathtt{count}$ counts the number of rounds executed by the device. The function $\mathtt{countNeighbours}$ counts how many neighbours has the device, simply by adding one for each device. The function $\mathtt{maxh}$ returns the maximum value $\mathtt{field}$ with which is called acroos neighbours. This is accomplished by calling $\mathtt{nbr}$ against each neighbour and combining the values by the Scala $\mathtt{Math.max}$ function.

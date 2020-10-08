@@ -1,0 +1,60 @@
+Kotlin \cite{Kotlin} is a general-purpose programming language fully interoperable with Java and developed by JetBrains. Its a cross-platform language, allowing to compile to the JVM, to JavaScript and to native code via LLVM. It supports both the Object-Oriented Programming paradigm and the Functional Programming paradigm. It allows the reuse of Java library on the JVM, its statically typed and supports the definition of custom DSLs. Since May 2017 the Android platform officially supports the Kotlin programming language, with the long term goal of make it the main language for the development of Android applications and libraries.
+
+\section{Class and function definition}
+
+Kotlin is desined to have a syntax familiar to Java developer, like Java it supports the Object-Oriented Programming paradigm. The code is structured in nested packages, each one containing classes and top level functions. Each class :
+\begin{itemize}
+\item may extend one other class and any number of interfaces
+\item may have any number of field, holding values of specified types
+\item has one primary constructor, which is responsible of initializing the field, and zero or more secondary constructor which must call the primary constructor
+\item may have any number of type parameters, abstracting over the types used inside the class
+\item may have any number of functions.
+\end{itemize}
+
+The following example shows the definition of a class:
+\begin{lstlisting}[language={kotac}]
+class Foo<T>(t: T): Serializable {
+  var v: T = t
+}
+\end{lstlisting}
+It defines a class named $\mathtt{Foo}$ with a type parameter $\mathtt{T}$ and implementing the Java interface $\mathtt{Serializable}$. The primary constructor takes a single argument $\mathtt{t}$ of type $\mathtt{T}$. A mutable field called $\mathtt{v}$ is declared of type $\mathtt{T}$ and inizialized with the value of $\mathtt{t}$.
+
+In Kotlin functions are first class values and function types are directly expressable in the type system. Functions can be defined as class members or as top-level functions. They can have any number of parameters and type parameters, parameters may have default values. Functions can also be passed as parameters or returned by other functions. Functions can have default arguments, which are parameters with default values. The following example shows the definition of a function:
+\begin{lstlisting}[language={kotac}]
+fun foo<T>(t: T, i: Int = 0): String { /* ... */ }
+\end{lstlisting}
+It defines a function named $\mathtt{foo}$ with a type parameter $\mathtt{T}$ that returns a value of type $\mathtt{String}$. It takes one argument of type $\mathtt{T}$ named $\mathtt{t}$ and one argument of type $\mathtt{Int}$ named $\mathtt{i}$ with default value $0$. The body of the function is omitted in the example.
+
+Anonymous functions can be declared as lambdas. A lambda is defined in the following code:
+\begin{lstlisting}[language={kotac}]
+val foo: (Int) -> String = { i -> i.toString() }
+\end{lstlisting}
+It defines an immutable variable named $\mathtt{foo}$ which has the type of a function from $\mathtt{Int}$ to $\mathtt{String}$ and its value is the following lambda that returns the string representation of the input.
+
+\section{Kotlin DSLs}
+
+Kotlin has many features that helps design DSLs with robust and type-safe APIs.
+
+Extension functions allows to defines a function as it was a member of an existing class, so that it can be called as it was a member of the original class. Inside the body of the function all the class members (field and functions) are directly accessible.
+For example the code:
+\begin{lstlisting}[language={kotac}]
+fun Int.plusOne(): Int { return this + 1 }
+\end{lstlisting}
+Declares an extension function of the class $\mathtt{Int}$ named $\mathtt{plusOne}$ that adds one to the integer number on which is called. For instance $4\mathtt{.plusOne()}$ evaluates to $5$.
+
+Trailing lambdas are a syntax feature that allows to write a lambda outside the parentheses when is the last argument of a function allowing write DSLs that can be called with a syntax more similar to built-in constructs. For example the code:
+\begin{lstlisting}[language={kotac}]
+fun iterate(times: Int, run: () -> Unit) { /* ... */ }
+\end{lstlisting}
+defines a function named $\mathtt{iterate}$ that can be called like:
+\begin{lstlisting}[language={kotac}]
+iterate(5) {
+  /* ... */
+}
+\end{lstlisting}
+
+Null safety is a type system feature that allows to write robust APIs. In Kotlin every times a function can accept as argument or return a null value it must be explicitly written in the type signature by adding a "$\mathtt{?}$" to the type. For example the code:
+\begin{lstlisting}[language={kotac}]
+fun foo(i: Int?): String? { /* ... */ }
+\end{lstlisting}
+declares a function named $\mathtt{foo}$ with a parameter that can be an instance of $\mathtt{Int}$ or $\mathtt{null}$ and returns a $\mathtt{String}$ or $\mathtt{null}$.

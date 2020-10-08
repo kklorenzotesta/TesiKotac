@@ -1,0 +1,74 @@
+\Kotac{} is an internal Domain Specific Language for the aggregate programming in Kotlin, currently under development at the address \textit{github.com/kklorenzotesta/KotAC}. Its designed to be fully cross-platform with easy to use idiomatic APIs. Like \Scafi{} the internal DSL offers an easy integration with existing code, and the API has the same semantics of the field calculus. It is also designed to be usable for Android applications. The repository has been integrated with the Travis \cite{Travis} continous integration to validate the pushed builds. The library is built with the Gradle \cite{Gradle} build tool, the standard build tool for Kotlin projects, and linted with the ktlint \cite{ktlint} plugin.
+
+\section{Explicit fields}
+Unlike \Scafi{}, in which the fields are implicitly represented in the notion of computation against a neighbour, \Kotac{} explicitly represents the field values with the following interface:
+\begin{lstlisting}[language={kotac}]
+interface Field<out T> {
+    fun <R> map(f: (T) -> R): Field<R>
+    fun <R> fold(initial: R, operation: (acc: R, T) -> R): R
+}
+\end{lstlisting}
+$\mathtt{Field}$ is an interface with a covariant\footnote{A class or interface $\mathtt{Foo<T>}$ is covariant in $\mathtt{T}$ if, for each class $\mathtt{B}$ subclass of $\mathtt{A}$, $\mathtt{Foo<B>}$ is subclass of $\mathtt{Foo<A>}$} type parameter $\mathtt{T}$, representing the type of the values to which each device in the field is mapped to. A field exposes only two high level functions for its manipulation. The $\mathtt{map}$ function applies the function $\mathtt{f}$, from $\mathtt{T}$ to $\mathtt{R}$, to each value of the field, obtaining a new field $\mathtt{Field<R>}$. The $\mathtt{fold}$ function allow to reduce a field to a regular local value. Like the \Scafi{} $\mathtt{foldhood}$ the $\mathtt{fold}$ function repeatedly combines the values of the field into an accomulator of type $\mathtt{R}$ by applying the given $\mathtt{operation}$ to each value starting with the value of $\mathtt{initial}$.
+
+Based on this basic operators the \Kotac{} standard library and the users can define new extension functions for the most common operations on fields. For example the built-in operator $\mathtt{anyhood}(\fvalue)$, which evaluates to true if any value of the field is true, can be defined as:
+\begin{lstlisting}[language={kotac}]
+fun Field<Boolean>.any(): Boolean = this.fold(true) { acc, v -> acc || v  }
+\end{lstlisting}
+
+A concrete implementation of field has been defined only for internal use. The implementation is backed by an immutable $\mathtt{Map}$ associating $\mathtt{DeviceID}$s to the values. The implementation is not part of the public API, disallowing arbitrary manipulations of fields data that may alter the semantics.
+
+$\mathtt{DeviceID}$ is an empty interface representing an identifier for a device. Two implementations are provided, one based on integer identifiers and one based on string identifiers.
+
+\section{Basic operators}
+
+The API for the field calculus operators are defined inside the interface $\mathtt{AggregateContext}$:
+\begin{lstlisting}[language={kotac}]
+interface AggregateContext {
+    fun <T> share(initial: T, f: (Field<T>) -> T): T
+    fun <K, T> align(key: K, proc: (K) -> T): T
+    fun <T> nbr(f: () -> T): Field<T>
+    fun <T> rep(initial: T, f: (T) -> T): T
+}
+\end{lstlisting}
+The $\mathtt{share}$ function implements the share operator of the field calculus, which at each execution applies the neighbouring field of the last computed value to the function $\mathtt{f}$, starting with the $\mathtt{initial}$ value for the executing device. The function $\mathtt{align}$ executes the function $\mathtt{proc}$ aligning to the devices with the same value of $\mathtt{key}$. The function $\mathtt{nbr}$ implements the nbr operator of the field calculus, running the function $\mathtt{f}$ for the executing device and returning a neighbouring field with the last values. The function $\mathtt{rep}$ implements the rep operator of the field calculus, which, starting from $\mathtt{initial}$ applies the last computed value to $\mathtt{f}$.
+
+Aggregate programs can then be written as extension function of $\mathtt{AggregateContext}$, allowing to call the operators just like keywords. For example the following code:
+\begin{lstlisting}[language={kotac}]
+fun AggregateContext.rounds(): Int = rep(0) { x -> x + 1 }
+\end{lstlisting}
+defines an aggregate program called $\mathtt{rounds}$ which counts the number of rounds that has been executed, if called at every round on the same $\mathtt{AggregateContext}$.
+
+\section{Internal implementation}
+The $\mathtt{ConcreteAggregateContext}$ class implements the $\mathtt{AggregateContext}$ interface providing the implementation of all the operators. 
+
+Internally the $\mathtt{Trace}$ interface represents an immutable point in the execution that will be use for the alignments,  it doesn't defines any methods but its used only for equality. The interface $\mathtt{Stack}$ is defined as:
+\begin{lstlisting}[language={kotac}]
+interface Stack {
+    fun enter(align: Any)
+    fun exit()
+    val trace: Trace
+}
+\end{lstlisting}
+It offers methods to manage the creating of $\mathtt{Trace}$s. The $\mathtt{enter}$ and $\mathtt{exit}$ methods are called by the operators to update che current $\mathtt{Trace}$, the method $\mathtt{trace}$ returns then a new instance of $\mathtt{Trace}$ based on the previous invocations of $\mathtt{enter}$ and $\mathtt{exit}$.
+
+The internal state of a $\mathtt{ConcreteAggregateContext}$ is kept in the data structures $\mathtt{ValueTree}$ and $\mathtt{ValueEnvironment}$. A $\mathtt{ValueTree}$ is an interface defined as:
+\begin{lstlisting}[language={kotac}]
+interface ValueTree {
+    fun get(trace: Trace): Any?
+    fun put(trace: Trace, value: Any?)
+}
+\end{lstlisting}
+The inferface describes a basic mutable $\mathtt{Map}$ from $\mathtt{Trace}$s to values of any type. Since values are absent in non aligned devices the returned values are nullable.
+A $\mathtt{ValueEnvironment}$ is an interface defined as:
+\begin{lstlisting}[language={kotac}]
+interface ValueEnvironment {
+    fun getTree(device: DeviceID): ValueTree
+    fun putTree(device: DeviceID, tree: ValueTree)
+}
+\end{lstlisting}
+The interface describes a basic mutable $\mathtt{Map}$ from $\mathtt{DeviceID}$s to $\mathtt{ValueTree}$s.
+Both $\mathtt{ValueTree}$ and $\mathtt{ValueEnvironment}$ are not designed to be accessed by application developers, but instead to be managed by the basic operators. Therefore their API will be modified according to the needs of the internals.
+
+The $\mathtt{ConcreteAggregateContext}$ contains then a field named $\mathtt{localTree}$ which is a $\mathtt{ValueTree}$ in which are stored the data for the local interactions, i.e. the rep operator. Another field named $\mathtt{neighboringTree}$ is a $\mathtt{ValueTree}$ in which are stored the data for the neighbouring interactions, i.e. the share and nbr operators, this tree will be sent to the neighbours. Finally a field named $\mathtt{neighboringEnvironment}$ is a $\mathtt{ValueEnvironment}$ holding all the last $\mathtt{ValueTree}$s sent by the neighbours.
+
+

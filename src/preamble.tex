@@ -37,6 +37,7 @@
     new,null,object,override,package,%
     private,protected,requires,return,sealed,%
     super,this,throw,trait,try,lazy,%
+    in, out,
     type,val,var,while,with,yield,forSome},
   otherkeywords={=>,<-,<\%,<:,>:,\#},
   keywordstyle=\color{blue},
@@ -45,6 +46,35 @@
   keywordstyle=[3]\color{violet}\textbf,
   keywords=[3]{nbrvar,sense,branch,mid,mux,nbrRange,sumHood,pickHood,
   	countHood,minHood,maxHood,foldhoodPlus,G,C,S,T,broadcast,
+  	distanceTo,summarize,minHoodPlus,gradient,
+  	collectSets,collectSet,priorityS,Metric},
+  keywordstyle=[4]\color{orange},
+  keywordstyle=[5]\color{darkgray},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  commentstyle=\color{mygreen},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]""",
+  moredelim=[is][\color{gray}\bfseries\underbar]{?-}{-?}
+}
+
+\lstdefinelanguage{kotac}{
+  keywords={abstract,case,catch,class,fun,%
+    do,else,extends,final,finally,%
+    for,if,implicit,import,match,mixin,%
+    new,null,object,override,package,%
+    private,protected,requires,return,sealed,%
+    super,this,throw,interface,try,lazy,%
+    type,val,var,while,with,yield,forSome},
+  otherkeywords={=>,<-,<\%,<:,>:,\#},
+  keywordstyle=\color{blue},
+  keywordstyle=[2]\color{red}\textbf,
+  keywords=[2]{rep,nbr,foldhood,map,share,align,fold,@@},
+  keywordstyle=[3]\color{violet}\textbf,
+  keywords=[3]{nbrvar,sense,branch,mid,mux,nbrRange,sumHood,pickHood,
+  	countHood,minHood,maxHood,foldhoodPlus,G,C,S,T,broadcast,any,
   	distanceTo,summarize,minHoodPlus,gradient,
   	collectSets,collectSet,priorityS,Metric},
   keywordstyle=[4]\color{orange},
