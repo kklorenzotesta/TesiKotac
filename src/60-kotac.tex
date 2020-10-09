@@ -71,4 +71,272 @@ Both $\mathtt{ValueTree}$ and $\mathtt{ValueEnvironment}$ are not designed to be
 
 The $\mathtt{ConcreteAggregateContext}$ contains then a field named $\mathtt{localTree}$ which is a $\mathtt{ValueTree}$ in which are stored the data for the local interactions, i.e. the rep operator. Another field named $\mathtt{neighboringTree}$ is a $\mathtt{ValueTree}$ in which are stored the data for the neighbouring interactions, i.e. the share and nbr operators, this tree will be sent to the neighbours. Finally a field named $\mathtt{neighboringEnvironment}$ is a $\mathtt{ValueEnvironment}$ holding all the last $\mathtt{ValueTree}$s sent by the neighbours.
 
+\section{\Kotac semantics}
 
+\begin{figure}[t]
+\centering
+\centerline{$
+\begin{array}{l@{\hspace{1mm}}c@{\hspace{1mm}}l@{\hspace{-8mm}}r}
+        \PROGRAM & \BNFcce & \overline{\FUNCTION}  \; \e
+                                                                                                                                                                                                        &   {\footnotesize \mbox{program}} \\[3pt]
+        \FUNCTION & \BNFcce &  \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
+                                                                                                                                                                                                        &   {\footnotesize \mbox{function declaration}} \\[3pt]
+        \e & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \e(\overline{\e}) \, \BNFmid \, \repK(\e)\{ (\xname) \ftoSym \e \} \, \BNFmid \, \nbrK\{\e\} \, \BNFmid \, \shareK(\e)\{(\xname) \ftoSym \e \} \,
+                                                                                                                                                                                                        &   {\footnotesize \mbox{expression}} \\[3pt]
+        \hline \\[-6pt]
+                \anyvalue & \BNFcce &  \lvalue \; \BNFmid \; \fvalue
+                &{ \mbox{\footnotesize value}}
+                \\[3pt]
+              \lvalue & \BNFcce &  \dcOf{\dc}{\overline\lvalue} \; \BNFmid \; \funvalue
+                &{ \mbox{\footnotesize local value}}
+                \\[3pt]
+                \fvalue & \BNFcce &  \envmap{\overline\deviceId}{\overline\lvalue}
+                &{ \mbox{\footnotesize neighbouring field value}} \\
+        \funvalue & \BNFcce & \bname \; \BNFmid \; \fname \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}
+                                                                                                                                                                                                        &   {\footnotesize\mbox{function value}} \\
+\end{array}
+$
+}
+\caption{Syntax of \FKotac{}}
+\label{fig:fkotacsyntax}
+\end{figure}
+
+In order to formalize the semantic of \Kotac{} a subset of it has been considered called \textit{Featherweight \Kotac{} (\FKotac{})} . The syntax of \FKotac is shown in figure \ref{fig:fkotacsyntax}, it focus on the aggregate constructs ignoring the Kotlin specific features. A program $\PROGRAM$ is a sequence of function declarations $\overline{\FUNCTION}$ followed by a main expression $\e$. A function declaration $\FUNCTION$ defines a (possibly recursive) function named $\fname$, with a sequence of formal parameters $\overline{\xname}$ and a body expression $\e$. An expression $\e$ can be a variable $\xname$, a value $\anyvalue$, a function application $\e(\overline{\e})$ where $\e$ evaluates to a function $\funvalue$ and $\overline{\e}$ are the arguments, a $\mathtt{rep}$-expression $\repK(\e)\{ \e \}$ modelling time evolution, a $\mathtt{nbr}$-expression $\nbrK\{\e\}$ modelling neighbourhood interaction or a $mathtt{share}$-expression $\shareK(\e)\{(\xname) \ftoSym \e \}$ modelling time evolution based on a neighbouring field.
+
+A value can be either a local value $\lvalue$ or a neighbouring field value $\fvalue$. Neighbouring field values doesn't appear in the source code but can only be computed dynamically, usally by built-in operators like $\mathtt{nbr}$ or $\mathtt{share}$.
+
+Local values can be either data value $ \dcOf{\dc}{\overline\lvalue}$, in which $\dc$ is a data constructor and $\overline{\lvalue}$ are local value arguments, or a function value $\funvalue$.
+
+A function value $\funvalue$ can be a built-in function $\bname$, a declared function $\fname$ or an anonymous function value $\toSym{\name}{\{\alignK(\name)\{\e\}\}}$, where $\overline{\xname}$ are variable names for the formal parameters, $\e$ is the body of the function and $\name$ is a \textit{tag} that uniquely identifies the function and doesn't occours in the source program.
+
+\begin{figure}[!t]{
+ \scalebox{0.85}{
+ $\begin{array}{l}
+ \textbf{Value-trees and value-tree environments:}\\
+\begin{array}{lcl@{\hspace{6.8cm}}r}
+%
+\vtree & \BNFcce &  \mkvt{\anyvalue}{\overline{\vtree}}    &   {\footnotesize \mbox{value-tree}} \\
+\Trees & \BNFcce & \envmap{\overline{\deviceId}}{\overline{\vtree}}   &   {\footnotesize \mbox{value-tree environment}}
+%
+\end{array}\\[10pt]
+\hline\\[-8pt]
+%%%%  AUX
+\textbf{Auxiliary functions:}\\
+\begin{array}{l}
+\begin{array}{l@{\hspace{1cm}}l}
+%
+\vrootOf{\mkvt{\anyvalue}{\overline{\vtree}}}  =   \anyvalue
+\\
+%
+\piIof{i}{\mkvt{\anyvalue}{\vtree_1,\ldots,\vtree_n}}  =   \vtree_i
+\quad \mbox{if} \; 1\le i \le n
+\\
+\piBof{\funvalue}{\mkvt{\anyvalue}{\vtree_1,\ldots,\vtree_{n+1}}}  =   \vtree_{n+1}
+\quad \mbox{if} \; \funvalue \; \mbox{is a built-in function and} \; \vrootOf{\vtree_{n+1}} = \funvalue
+\\
+\piBof{\funvalue}{\mkvt{\anyvalue}{\vtree_1,\ldots,\vtree_{n+2}}}  =   \vtree_{n+2}
+\quad \mbox{if} \; \funvalue \; \mbox{is a non-built-in function and} \; \nameOf(\vrootOf{\vtree_{n+1}}) = \nameOf(\funvalue)
+\\
+ \piBof{\funvalue}{\vtree}  =   \emptyseq \quad \mbox{otherwise}
+\\  
+\end{array}
+\\
+\mbox{For } \auxNAME\in\rho,\piI{i},\piB{\funvalue}:
+\quad 
+\left\{\begin{array}{lcll}
+ \aux{\envmap{\deviceId}{\vtree}, \Trees}  & =  & \envmap{\deviceId}{\aux{\vtree}}, \aux{\Trees} & \quad \mbox{if} \; \aux{\vtree} \not=\emptyseq  
+\\
+\aux{\envmap{\deviceId}{\vtree}, \Trees}  & =   & \aux{\Trees} & \quad \mbox{if} \; \aux{\vtree}=\emptyseq  
+\\
+\aux{\emptyseq}  & =  &  \emptyseq
+\end{array}\right.   
+\\
+\begin{array}{ll}
+\nameOf(\fname) = \fname 
+& 
+\args{\fname} = \overline{\xname} \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
+\\
+\body{\fname} = \e  \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
+&
+\nameOf(\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}) = \name
+\\
+\args{(\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}} = \overline{\xname}
+&
+\body{(\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}} = \e
+\end{array}
+\\
+\begin{array}{l@{\hspace{0.4cm}}l}
+		\fvalue_0[\fvalue_1] = \fvalue_2 \; \text{ where } \fvalue_2(\deviceId) = \left\lbrace \begin{array}{ll}
+			\fvalue_1(\deviceId) & \text{if } \deviceId \in \domof{\fvalue_1} \\
+			\fvalue_0(\deviceId) & \text{otherwise}
+		\end{array} \right. \\
+\end{array}
+\end{array}\\
+\hline\\[-10pt]
+\textbf{Syntactic shorthands:}\\
+\begin{array}{l@{\hspace{5pt}}l@{\hspace{5pt}}l}
+\bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e}}{\overline{\vtree}}
+&
+  \textrm{where~~} |\overline{\e}|=n
+&
+  \textrm{for~~}
+  \bsopsem{\deviceId}{\piIof{1}{\Trees}}{\senstate}{\e_1}{\vtree_1}
+    \cdots
+    \bsopsem{\deviceId}{\piIof{n}{\Trees}}{\senstate}{\e_n}{\vtree_n} \!\!\!\!\!\!\!\!\!\!\!\! \\
+\vrootOf{\overline{\vtree}}
+&
+  \textrm{where~~} |\overline{\vtree}|=n
+  & \textrm{for~~}
+\vrootOf{\vtree_1},\ldots,\vrootOf{\vtree_n}\\
+\substitution{\overline{\xname}}{\vrootOf{\overline{\vtree}}}
+&   \textrm{where~~} |\overline{\xname}|=n
+  &
+  \textrm{for~~}
+\substitution{\xname_1}{\vrootOf{\vtree_1}}~\ldots\quad\substitution{\xname_n}{\vrootOf{\vtree_n}}
+\end{array}\\
+\hline\\[-10pt]
+%%%  EVALUATION RULES
+\textbf{Rules for expression evaluation:} \hspace{4.4cm} %\hfill
+%\vspace{-0.2cm}
+  \boxed{\bsopsem{\deviceId}{\Trees}{\senstate}{\e}{\vtree}}
+\skiptransition%[-5pt]
+\begin{array}{c}
+%\vspace{-0.1cm}
+\nullsurfaceTyping{E-LOC}{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\lvalue}{\mkvt{\lvalue}{}}
+}
+\qquad\qquad
+\surfaceTyping{E-FLD}{\qquad \fvalue' = \proj{\fvalue}{\domof{\Trees}\cup\{\deviceId\}}}{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\fvalue}{\mkvt{\fvalue'}{}}
+}
+\skiptransition\\[-6pt]
+\surfaceTyping{E-B-APP}{  \quad
+\begin{array}{c}
+  \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree}
+  \qquad \bname=\vrootOf{\vtree}
+  \qquad \anyvalue=\builtinop{\bname}{\correction{\deviceId}}{\piBof{\bname}{\Trees},\senstate}(\vrootOf{\overline{\vtree}})
+\end{array}
+ }{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\anyvalue}{\overline{\vtree},\vtree}}
+}
+%
+\skiptransition\\[-6pt]
+%
+\surfaceTyping{E-D-APP}{ \quad
+\begin{array}{c}
+  \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree} \qquad 
+  \funvalue=\vrootOf{\vtree} \mbox{is not a built-in} \qquad
+\\
+  \bsopsem{\deviceId}{\piBof{\funvalue}{\Trees}}{\senstate}{\applySubstitution{\body{\funvalue}}{\substitution{\args{\funvalue}}{\vrootOf{\overline{\vtree}}}}}{\vtree'}
+\end{array}
+ }{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\vrootOf{\vtree'}}{\overline{\vtree},\vtree,\vtree'}}
+}
+%
+\skiptransition\\[-5pt]
+\surfaceTyping{E-NBR}{
+         \qquad
+     \Trees_1=\piIof{1}{\Trees} \qquad
+     \bsopsem{\deviceId}{\Trees_1}{\senstate}{\e}{\vtree_1}
+\qquad
+ \fvalue=\mapupdate{\vrootOf{\Trees_1}}{\envmap{\deviceId}{\vrootOf{\vtree_1}}}
+ }{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\nbrK\{\e\}}{\mkvt{\fvalue}{\vtree_1}}
+}
+\skiptransition\\[-6pt]
+\surfaceTyping{E-REP}{
+        \quad
+        \begin{array}{l}
+     \bsopsem{\deviceId}{\piIof{1}{\Trees}}{\senstate}{\e_1}{\vtree_1} \\
+     \bsopsem{\deviceId}{\piIof{2}{\Trees}}{\senstate}{\applySubstitution{\e_2}{\substitution{\xname}{\lvalue_0}}}{\vtree_2}~~
+        \end{array}
+        \quad
+        \lvalue_0 \! = \!\left\{\begin{array}{ll}
+                             \vrootOf{\piIof{2}{\Trees}}(\deviceId) & \mbox{if} \;  \deviceId \in \domof{\Trees} \\
+                             \vrootOf{\vtree_{1}} & \mbox{otherwise}
+                           \end{array}\right.
+ }{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\repK(\e_1)\{(\xname) \; \ftoSym \; \e_2\}}{\mkvt{\vrootOf{\vtree_{2}}}{\vtree_1,\vtree_2}}
+}
+\skiptransition\\[-4pt]
+\surfaceTyping{E-SHARE}{ \qquad
+	\begin{array}{l@{\hspace{0.5em}}l}
+     \bsopsem{\deviceId}{\piIof{1}{\Trees}}{{\senstate}}{\e_1}{\vtree_1} & \fvalue' = \vrootOf{\piIof{2}{\Trees}} 
+      \qquad \qquad \fvalue = (\envmap{\deviceId}{\vrootOf{\vtree_1}})[\fvalue']
+     \\
+     \bsopsem{\deviceId}{\piIof{2}{\Trees}}{{\senstate}}{\applySubstitution{\e_2}{\substitution{\xname}{\fvalue}}}{\vtree_2} %& \fvalue = (\envmap{\deviceId}{\vrootOf{\vtree_1}})[\fvalue']
+	\end{array}
+	\!\!\!\!
+ }{
+	\bsopsem{\deviceId}{\Trees}{\senstate}{\shareK(\e_1)\{(\xname) \; \ftoSym \; \e_2\}}{\mkvt{\vrootOf{\vtree_{2}}}{\vtree_1,\vtree_2}}
+}
+\end{array}
+\end{array}$
+}
+}
+ \caption{Big-step operational semantics of \FKotac{}.} \label{fig:kotacSemantics}
+\end{figure}
+
+Figure \ref{fig:kotacSemantics} shows the operational semantics of the syntax.It follows the same notation of the field calculus semantics and uses the same auxiliary functions. Rules \ruleNameSize{[E-LOC]} e \ruleNameSize{[E-FLD]} define the evaluation fo local values and neighbouring values, both producing a value-tree with no subtrees, with a domain restriction to the aligned devices in case of neighbouring fields. Rules \ruleNameSize{[E-B-APP]} and \ruleNameSize{[E-D-APP]} model the application of built-in and user defined (or anonymous) functions, the former based on a function different for each built-in and the latter by executing the body of the function. Rule \ruleNameSize{[E-NBR]} models the evaluation of $\mathtt{nbr}$-expressions, by extracting from the value-tree environment the neighbouring values to build a neighbouring field, and computing the expressions $\e$ for the new value of the executing device. Rule \ruleNameSize{[E-REP]} models the evauation of $\mathtt{rep}$-expressions, by extracting from the value-tree environemtn the last computed value for the new evaluation of $\e$. Rule \ruleNameSize{[E-SHARE]} models the evaluation of $\mathtt{share}$-expressions, by constructing a field of the last computing values as the argument $\xname$ for the evaluation of $\e_2$ and using $\e_1$ as the initial value of the executing device.
+
+\begin{figure}[!t]{
+ $\begin{array}{l}
+ %%%  SYNTAX
+ \textbf{System configurations and action labels:}\\
+\begin{array}{lcl@{\hspace{7.5cm}}r}
+%
+\Field & \BNFcce &  \envmap{\overline\deviceId}{\overline\Trees}    &   {\footnotesize \mbox{status field}} \\
+\Topo & \BNFcce &  \envmap{\overline\deviceId}{\overline\devset}    &   {\footnotesize \mbox{topology}} \\
+\Sens & \BNFcce &  \envmap{\overline\deviceId}{\overline\senstate}    &   {\footnotesize \mbox{sensors-map}} \\
+\Envi & \BNFcce &  \EnviS{\Topo}{\Sens}    &   {\footnotesize \mbox{environment}} \\
+\Cfg & \BNFcce &  \SystS{\Envi}{\Field}    &   {\footnotesize \mbox{network configuration}} \\
+\act & \BNFcce &  \deviceId \;\BNFmid\; \envact    &   {\footnotesize \mbox{action label}} \\
+%
+\end{array}\\
+\hline\\[-8pt]
+\textbf{Environment well-formedness:}\\
+\begin{array}{l}
+%
+\wfn{\EnviS{\Topo}{\Sens}} \textrm{~~holds iff {$\domof{\Topo}=\domof{\Sens}$ and $\Topo(\deviceId) \subseteq \domof{\Sens}$ for all $\deviceId \in \domof{\Sens}$.}}
+\\
+\end{array}\\
+\hline\\[-8pt]
+%%%%%%%%%%
+%%%  REDUCTION RULES
+\textbf{Transition rules for network evolution:} \hfill
+  \boxed{\nettran{\Cfg}{\act}{\Cfg}}
+  \\[0.2cm]
+\vspace{0.5cm}
+\begin{array}{c}
+\netopsemRule{N-FIR}
+                 {\quad \Envi=\EnviS{\Topo}{\Sens}
+                   \quad \Topo(\deviceId)= \overline\deviceId 
+                  \quad {\bsopsem{\deviceId}{\filter(\Field)(\deviceId)}{\Sens(\deviceId)}{\emain}{\vtree}}
+                  \quad
+                 \Field_1=\envmap{\overline\deviceId}{\{\envmap{\deviceId}{\vtree}\}}}
+                 {\nettran{\SystS{\Envi}{\Field}}{\deviceId}{\SystS{\Envi}{\mapupdate{\filter(\Field)}{\Field_1}}}%\nopsem{\EnviS{\Topo}{\Sens}}{\Field}{\deviceId}{\mapupdate{\Field}{\deviceId}{\vtree}}
+                 }
+\skiptransition
+\netopsemRule{N-ENV}
+                 {\qquad \wfn{\Envi'}\qquad \Envi'=\EnviS{\Topo}{\envmap{\overline\deviceId}{\overline\senstate}} \qquad
+                  %\bsopsem{\senstate_1}{\emptyset}{\emain}{\vtree_1}\quad\cdots\quad\bsopsem{\senstate_n}{\emptyset}{\emain}{\vtree_n} \qquad
+                  \Field_0=\envmap{\overline\deviceId}{\emptyset}
+                 }
+                 {\nettran{\SystS{\Envi}{\Field}}{\envact}{\SystS{\Envi'}{\mapupdate{\Field_0}{\Field}}}
+                 }\\[-10pt]
+\end{array}\\
+%\textbf{Initial device state $\initialvtree$:}\\[0.2cm]
+%\begin{array}{c}
+%
+%\qquad\qquad\netopsemRule{Init}
+%                 {\senstate_0(\snsname)=\initialOf{\typeof{\snsname}}}
+%                 {\bsopsem{\senstate_0}{\emptyset}{\emain}{\initialvtree}}
+%
+%\end{array}
+%
+\end{array}$
+} %%%\capskip
+ \caption{Small-step operational semantics for network evolution.} \label{fig:kotacnetworkSemantics}
+\end{figure}
+
+Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whole networks. It uses the same syntax of the field calculus network semantics and the same rules. Like for the field calculus rule \ruleNameSize{[N-FIR]} models a computational round on device $\deviceId$ and rule \ruleNameSize{[N-ENV]} models an environement change to a new well-formed environment.
