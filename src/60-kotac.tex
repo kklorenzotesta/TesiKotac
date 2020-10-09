@@ -77,23 +77,33 @@ The $\mathtt{ConcreteAggregateContext}$ contains then a field named $\mathtt{loc
 \centering
 \centerline{$
 \begin{array}{l@{\hspace{1mm}}c@{\hspace{1mm}}l@{\hspace{-8mm}}r}
-        \PROGRAM & \BNFcce & \overline{\FUNCTION}  \; \e
+        \PROGRAM & \BNFcce & \overline{\FUNCTION_n} \; \overline {\FUNCTION_a} \; \e_a
                                                                                                                                                                                                         &   {\footnotesize \mbox{program}} \\[3pt]
-        \FUNCTION & \BNFcce &  \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
-                                                                                                                                                                                                        &   {\footnotesize \mbox{function declaration}} \\[3pt]
-        \e & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \e(\overline{\e}) \, \BNFmid \, \repK(\e)\{ (\xname) \ftoSym \e \} \, \BNFmid \, \nbrK\{\e\} \, \BNFmid \, \shareK(\e)\{(\xname) \ftoSym \e \} \,
-                                                                                                                                                                                                        &   {\footnotesize \mbox{expression}} \\[3pt]
+        \FUNCTION_a & \BNFcce &  \funK \; \fname_a (\overline{\xname}) \; \{ \alignK(\fname_a){\{\e_a\}} \}
+                                                                                                                                                                                                        &   {\footnotesize \mbox{aligned function declaration}} \\[3pt]
+        \FUNCTION_n & \BNFcce &  \funK \; \fname_n (\overline{\xname}) \; \{ \e_n \}
+                                                                                                                                                                                                        &   {\footnotesize \mbox{non-aligned function declaration}} \\[3pt]
+        \e_a & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \e_a(\overline{\e_a}) \, \BNFmid \, \repK(\e_a)\{ (\xname) \ftoSym \e_a \} \, \BNFmid \, \nbrK\{\e_a\} \, \BNFmid \,
+                                                                                                                                                                                                        &   {\footnotesize \mbox{aligned expression}} \\
+        && \shareK(\e_a)\{(\xname) \ftoSym \e_a \} \\[3pt]
+        \e_n & \BNFcce & \xname \, \BNFmid \, \lvalue_n \, \BNFmid \, \e_n(\overline{\e_n})
+                                                                                                                                                                                                        &   {\footnotesize \mbox{non-aligned expression}} \\[3pt]
         \hline \\[-6pt]
-                \anyvalue & \BNFcce &  \lvalue \; \BNFmid \; \fvalue
+                \anyvalue & \BNFcce &  \lvalue_a \; \BNFmid \; \lvalue_n \; \BNFmid \; \fvalue
                 &{ \mbox{\footnotesize value}}
                 \\[3pt]
-              \lvalue & \BNFcce &  \dcOf{\dc}{\overline\lvalue} \; \BNFmid \; \funvalue
-                &{ \mbox{\footnotesize local value}}
+              \lvalue_a & \BNFcce &  \dcOf{\dc}{\overline\lvalue_a} \; \BNFmid \; \funvalue_a
+                &{ \mbox{\footnotesize aligned local value}}
+                \\[3pt]
+              \lvalue_n & \BNFcce &  \dcOf{\dc}{\overline\lvalue_n} \; \BNFmid \; \funvalue_n
+                &{ \mbox{\footnotesize non-aligned local value}}
                 \\[3pt]
                 \fvalue & \BNFcce &  \envmap{\overline\deviceId}{\overline\lvalue}
                 &{ \mbox{\footnotesize neighbouring field value}} \\
-        \funvalue & \BNFcce & \bname \; \BNFmid \; \fname \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}
-                                                                                                                                                                                                        &   {\footnotesize\mbox{function value}} \\
+        \funvalue_a & \BNFcce & \bname_a \; \BNFmid \; \fname_a \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}
+                                                                                                                                                                                                        &   {\footnotesize\mbox{aligned function value}} \\
+        \funvalue_n & \BNFcce & \bname_n \; \BNFmid \; \fname_n \; \BNFmid \; (\overline{\xname}) \; \ftoSym \{ \e_n \}
+                                                                                                                                                                                                        &   {\footnotesize\mbox{non-aligned function value}} \\
 \end{array}
 $
 }
@@ -101,13 +111,17 @@ $
 \label{fig:fkotacsyntax}
 \end{figure}
 
-In order to formalize the semantic of \Kotac{} a subset of it has been considered called \textit{Featherweight \Kotac{} (\FKotac{})} . The syntax of \FKotac is shown in figure \ref{fig:fkotacsyntax}, it focus on the aggregate constructs ignoring the Kotlin specific features. A program $\PROGRAM$ is a sequence of function declarations $\overline{\FUNCTION}$ followed by a main expression $\e$. A function declaration $\FUNCTION$ defines a (possibly recursive) function named $\fname$, with a sequence of formal parameters $\overline{\xname}$ and a body expression $\e$. An expression $\e$ can be a variable $\xname$, a value $\anyvalue$, a function application $\e(\overline{\e})$ where $\e$ evaluates to a function $\funvalue$ and $\overline{\e}$ are the arguments, a $\mathtt{rep}$-expression $\repK(\e)\{ \e \}$ modelling time evolution, a $\mathtt{nbr}$-expression $\nbrK\{\e\}$ modelling neighbourhood interaction or a $mathtt{share}$-expression $\shareK(\e)\{(\xname) \ftoSym \e \}$ modelling time evolution based on a neighbouring field.
+In order to formalize the semantic of \Kotac{} a subset of it has been considered called \textit{Featherweight \Kotac{} (\FKotac{})}. The syntax of \FKotac is shown in figure \ref{fig:fkotacsyntax}, it focus on the aggregate constructs ignoring the Kotlin specific features. Unlike \FSCAFI, which considers only aggregate functions (which require alignment), in \FKotac has been considered also regular function, i.e. functions that don't require alignment and don't allow to call aggregate functions and aggregate constructs in their body. 
 
-A value can be either a local value $\lvalue$ or a neighbouring field value $\fvalue$. Neighbouring field values doesn't appear in the source code but can only be computed dynamically, usally by built-in operators like $\mathtt{nbr}$ or $\mathtt{share}$.
+A program $\PROGRAM$ is a sequence of non-aligned function declarations $\overline{\FUNCTION_n}$ followed by a sequence of aligned function declarations $\overline{\FUNCTION_a}$ and followed by a main aligned expression $\e_a$. An aligned function declaration $\FUNCTION_a$ defines a (possibly recursive) aligned function named $\fname_a$, with a sequence of formal parameters $\overline{\xname}$ and a body aligned expression $\e_a$. A non-aligned function declaration $\FUNCTION_n$ defines a (possibly recursive) non aligned function named $\fname_n$ with a sequence of formal parameters $\overline{\xname}$ and a body non-aligned expression $\e_n$. 
 
-Local values can be either data value $ \dcOf{\dc}{\overline\lvalue}$, in which $\dc$ is a data constructor and $\overline{\lvalue}$ are local value arguments, or a function value $\funvalue$.
+An aligned expression $\e_a$ can be a variable $\xname$, a value $\anyvalue$, a function application $\e_a(\overline{\e_a})$ where $\e_a$ evaluates to a function $\funvalue_a$ or $\funvalue_n$ and $\overline{\e_a}$ are the arguments, a $\mathtt{rep}$-expression $\repK(\e_a)\{ \e_a \}$ modelling time evolution, a $\mathtt{nbr}$-expression $\nbrK\{\e_a\}$ modelling neighbourhood interaction or a $\mathtt{share}$-expression $\shareK(\e_a)\{(\xname) \ftoSym \e_a \}$ modelling time evolution based on a neighbouring field. A non-aligned expression $\e_n$ can be a variable $\xname$, a non-aligned local value $\lvalue_n$ or a function application $\e_n(\overline{\e_n})$ where $\e_n$ evaluates to a function $\funvalue_n$ and $\overline{\e_n}$ are the arguments.
 
-A function value $\funvalue$ can be a built-in function $\bname$, a declared function $\fname$ or an anonymous function value $\toSym{\name}{\{\alignK(\name)\{\e\}\}}$, where $\overline{\xname}$ are variable names for the formal parameters, $\e$ is the body of the function and $\name$ is a \textit{tag} that uniquely identifies the function and doesn't occours in the source program.
+A value can be either an aligned local value $\lvalue_a$, a non-aligned local value $\lvalue_n$ or a neighbouring field value $\fvalue$. Neighbouring field values doesn't appear in the source code but can only be computed dynamically, usally by built-in operators like $\mathtt{nbr}$ or $\mathtt{share}$.
+
+Aligned local values can be either a data value $\dcOf{\dc}{\overline\lvalue_a}$, in which $\dc$ is a data constructor and $\overline{\lvalue_a}$ are aligned local value arguments, or an aligned function value $\funvalue_a$. Non-aligned local values can be either a data value $\dcOf{\dc}{\overline\lvalue_n}$, in which $\dc$ is a data constructor and $\overline{\lvalue_n}$ are non-aligned local value arguments, or a non-aligned function value $\funvalue_n$.
+
+An aligned function value $\funvalue_a$ can be an aligned built-in function $\bname_a$, a declared aligned function $\fname_a$ or an anonymous aligned function value $ (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e_a\}\}}$, where $\overline{\xname}$ are variable names for the formal parameters, $\e_a$ is the body of the function and $\name$ is a \textit{tag} that uniquely identifies the function and doesn't occours in the source program. A non-aligned function value $\funvalue_n$ can be a non-aligned built-in function $\bname_n$ (e.g. a pure mathematical or logical function), a declare non-aligned function $\fname_n$ or an anonymous non-aligned function value $(\overline{\xname}) \; \ftoSym \{ \e_n \}$, where $\overline{\xname}$ are variable names for the formal parameters and $\e_n$ is the body of the function.
 
 \begin{figure}[!t]{
  \scalebox{0.85}{
@@ -153,16 +167,24 @@ A function value $\funvalue$ can be a built-in function $\bname$, a declared fun
 \\
 \begin{array}{ll}
 \nameOf(\fname) = \fname 
-& 
-\args{\fname} = \overline{\xname} \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
-\\
-\body{\fname} = \e  \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
 &
-\nameOf(\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}) = \name
+\nameOf((\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}) = \name
+\\
+\args{\fname} = \overline{\xname} \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
+&
+\args{\fname} = \overline{\xname} \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \e \}
 \\
 \args{(\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}} = \overline{\xname}
 &
+\args{(\overline{\xname}) \; \ftoSym \{ \e \}} = \overline{\xname}
+\\
+\body{\fname} = \e  \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
+&
+\body{\fname} = \e  \quad \mbox{if } \,  \funK \; \fname (\overline{\xname}) \; \{ \e \}
+\\
 \body{(\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}} = \e
+&
+\body{(\overline{\xname}) \; \ftoSym \{ \e \}} = \e
 \end{array}
 \\
 \begin{array}{l@{\hspace{0.4cm}}l}
@@ -210,11 +232,11 @@ A function value $\funvalue$ can be a built-in function $\bname$, a declared fun
 \bsopsem{\deviceId}{\Trees}{\senstate}{\fvalue}{\mkvt{\fvalue'}{}}
 }
 \skiptransition\\[-6pt]
-\surfaceTyping{E-B-APP}{  \quad
+\surfaceTyping{E-BA-APP}{  \quad
 \begin{array}{c}
   \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree}
-  \qquad \bname=\vrootOf{\vtree}
-  \qquad \anyvalue=\builtinop{\bname}{\correction{\deviceId}}{\piBof{\bname}{\Trees},\senstate}(\vrootOf{\overline{\vtree}})
+  \qquad \bname_a = \vrootOf{\vtree}
+  \qquad \anyvalue=\builtinop{\bname_a}{\correction{\deviceId}}{\piBof{\bname_a}{\Trees},\senstate}(\vrootOf{\overline{\vtree}})
 \end{array}
  }{
 \bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\anyvalue}{\overline{\vtree},\vtree}}
@@ -222,15 +244,38 @@ A function value $\funvalue$ can be a built-in function $\bname$, a declared fun
 %
 \skiptransition\\[-6pt]
 %
-\surfaceTyping{E-D-APP}{ \quad
+\surfaceTyping{E-DA-APP}{ \quad
 \begin{array}{c}
   \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree} \qquad 
-  \funvalue=\vrootOf{\vtree} \mbox{is not a built-in} \qquad
+  \funvalue=\vrootOf{\vtree} \mbox{is aligned and not a built-in} \qquad
 \\
   \bsopsem{\deviceId}{\piBof{\funvalue}{\Trees}}{\senstate}{\applySubstitution{\body{\funvalue}}{\substitution{\args{\funvalue}}{\vrootOf{\overline{\vtree}}}}}{\vtree'}
 \end{array}
  }{
 \bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\vrootOf{\vtree'}}{\overline{\vtree},\vtree,\vtree'}}
+}
+\skiptransition\\[-6pt]
+\surfaceTyping{E-BN-APP}{  \quad
+\begin{array}{c}
+  \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree}
+  \qquad \bname_n = \vrootOf{\vtree}
+  \qquad \anyvalue=\builtinop{\bname_n}{\correction{\deviceId}}{}(\vrootOf{\overline{\vtree}})
+\end{array}
+ }{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\anyvalue}{\overline{\vtree},\vtree}}
+}
+%
+\skiptransition\\[-6pt]
+%
+\surfaceTyping{E-DN-APP}{ \quad
+\begin{array}{c}
+  \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree} \qquad 
+  \funvalue=\vrootOf{\vtree} \mbox{is non-aligned and not a built-in} \qquad
+\\
+  \bsopsem{\deviceId}{\emptyseq}{\emptyseq}{\applySubstitution{\body{\funvalue}}{\substitution{\args{\funvalue}}{\vrootOf{\overline{\vtree}}}}}{\vtree'}
+\end{array}
+ }{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\vrootOf{\vtree'}}{\overline{\vtree},\vtree}}
 }
 %
 \skiptransition\\[-5pt]
@@ -277,7 +322,9 @@ A function value $\funvalue$ can be a built-in function $\bname$, a declared fun
  \caption{Big-step operational semantics of \FKotac{}.} \label{fig:kotacSemantics}
 \end{figure}
 
-Figure \ref{fig:kotacSemantics} shows the operational semantics of the syntax.It follows the same notation of the field calculus semantics and uses the same auxiliary functions. Rules \ruleNameSize{[E-LOC]} e \ruleNameSize{[E-FLD]} define the evaluation fo local values and neighbouring values, both producing a value-tree with no subtrees, with a domain restriction to the aligned devices in case of neighbouring fields. Rules \ruleNameSize{[E-B-APP]} and \ruleNameSize{[E-D-APP]} model the application of built-in and user defined (or anonymous) functions, the former based on a function different for each built-in and the latter by executing the body of the function. Rule \ruleNameSize{[E-NBR]} models the evaluation of $\mathtt{nbr}$-expressions, by extracting from the value-tree environment the neighbouring values to build a neighbouring field, and computing the expressions $\e$ for the new value of the executing device. Rule \ruleNameSize{[E-REP]} models the evauation of $\mathtt{rep}$-expressions, by extracting from the value-tree environemtn the last computed value for the new evaluation of $\e$. Rule \ruleNameSize{[E-SHARE]} models the evaluation of $\mathtt{share}$-expressions, by constructing a field of the last computing values as the argument $\xname$ for the evaluation of $\e_2$ and using $\e_1$ as the initial value of the executing device.
+Figure \ref{fig:kotacSemantics} shows the operational semantics of the syntax. It follows the same notation of the field calculus semantics and uses the same auxiliary functions. Rules \ruleNameSize{[E-LOC]} e \ruleNameSize{[E-FLD]} define the evaluation of local values (aligned or non-aligned) and neighbouring values, both producing a value-tree with no subtrees, with a domain restriction to the aligned devices in case of neighbouring fields. Rules \ruleNameSize{[E-BA-APP]} and \ruleNameSize{[E-DA-APP]} model the application of aligned built-in and aligned user defined (or anonymous) functions, the former based on a function different for each built-in and the latter by executing the body of the function. Rules \ruleNameSize{[E-BN-APP]} and \ruleNameSize{[E-DN-APP]} model the application of non-aligned built-in and non-aligned user defined (or anonymous) functions, those rules are not present in the field calculus semantics. In the former the root of the value-tree is computed by a function $\builtinop{\bname_n}{\correction{\deviceId}}{}$ not dependent on the environement or sensor state and different for each built-in. In the latter the root is computed by executing the body of the function $\funvalue$ (with an empty value-tree environment and sensor state) and discarding its computed sub-value-tree, except for the root which its the root of the new value-tree. Rule \ruleNameSize{[E-NBR]} models the evaluation of $\mathtt{nbr}$-expressions, by extracting from the value-tree environment the neighbouring values to build a neighbouring field, and computing the expressions $\e$ for the new value of the executing device. Rule \ruleNameSize{[E-REP]} models the evauation of $\mathtt{rep}$-expressions, by extracting from the value-tree environemtn the last computed value for the new evaluation of $\e$. Rule \ruleNameSize{[E-SHARE]} models the evaluation of $\mathtt{share}$-expressions, by constructing a field of the last computing values as the argument $\xname$ for the evaluation of $\e_2$ and using $\e_1$ as the initial value of the executing device.
+
+Its important to note that a non-aligned function $\fname_n$ can be called for example with an aligned anonymous functions $\name$ as parameters according to the syntax and semantics. If the function $\name$ is then called inside the body of $\fname_n$ it will not have the expected aligned behavior. In order to avoid this situation typing rules must enforce that only non-aligned local value can be passed as arguments of non-aligned functions (either declared or anonymous).
 
 \begin{figure}[!t]{
  $\begin{array}{l}
