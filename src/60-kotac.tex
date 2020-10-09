@@ -81,24 +81,31 @@ The $\mathtt{ConcreteAggregateContext}$ contains then a field named $\mathtt{loc
                                                                                                                                                                                                         &   {\footnotesize \mbox{program}} \\[3pt]
         \FUNCTION & \BNFcce &  \AFUNCTION \, \BNFmid \, \SFUNCTION
                                                                                                                                                                                                         &   {\footnotesize \mbox{function declaration}} \\[3pt]
-        \AFUNCTION & \BNFcce &  \funK \; \afname (\overline{\xname}) \; \{ \alignK(\afname){\{\e\}} \}
+        \AFUNCTION & \BNFcce &  \funK \; \afname (\overline{\xname}) \; \{ \alignK(\afname){\{\aexp\}} \}
                                                                                                                                                                                                         &   {\footnotesize \mbox{aligned function declaration}} \\[3pt]
-        \SFUNCTION & \BNFcce &  \funK \; \sfname (\overline{\xname}) \; \{ \e \}
+        \SFUNCTION & \BNFcce &  \funK \; \sfname (\overline{\xname}) \; \{ \sexp \}
                                                                                                                                                                                                         &   {\footnotesize \mbox{standard function declaration}} \\[3pt]
-        \e & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \e(\overline{\e}) \, \BNFmid \, \sfname(\overline{\e}) \, \BNFmid \, \repK(\e)\{ (\xname) \ftoSym \e \} \, \BNFmid \, \nbrK\{\e\} \, \BNFmid \,
-                                                                                                                                                                                                        &   {\footnotesize \mbox{expression}} \\
-        && \shareK(\e)\{(\xname) \ftoSym \e \} \\[3pt]
+        \aexp & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \aexp(\overline{\aexp}) \, \BNFmid \, \repK(\aexp)\{ (\xname) \ftoSym \aexp \} \, \BNFmid \, \nbrK\{\aexp\} \, \BNFmid \,
+                                                                                                                                                                                                        &   {\footnotesize \mbox{aligned expression}} \\
+        && \shareK(\aexp)\{(\xname) \ftoSym \aexp \} \\[3pt]
+        \sexp & \BNFcce & \xname \, \BNFmid \, \slvalue \, \BNFmid \, \sexp(\overline{\sexp})
+                                                                                                                                                                                                        &   {\footnotesize \mbox{standard expression}} \\[3pt]
         \hline \\[-6pt]
-                \anyvalue & \BNFcce &  \lvalue \; \BNFmid \; \fvalue
+                \anyvalue & \BNFcce &  \alvalue \; \BNFmid \; \slvalue \; \BNFmid \; \fvalue
                 &{ \mbox{\footnotesize value}}
                 \\[3pt]
-              \lvalue & \BNFcce &  \dcOf{\dc}{\overline\lvalue} \; \BNFmid \; \funvalue
-                &{ \mbox{\footnotesize local value}}
+              \alvalue & \BNFcce &  \dcOf{\dc}{\overline\alvalue} \; \BNFmid \; \afunvalue
+                &{ \mbox{\footnotesize aligned local value}}
+                \\[3pt]
+              \slvalue & \BNFcce &  \dcOf{\dc}{\overline\slvalue} \; \BNFmid \; \sfunvalue
+                &{ \mbox{\footnotesize standard local value}}
                 \\[3pt]
                 \fvalue & \BNFcce &  \envmap{\overline\deviceId}{\overline\lvalue}
                 &{ \mbox{\footnotesize neighbouring field value}} \\
-        \afunvalue & \BNFcce & \bname \; \BNFmid \; \afname \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}
-                                                                                                                                                                                                        &   {\footnotesize\mbox{function value}} \\
+        \afunvalue & \BNFcce & \abname \; \BNFmid \; \afname \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}}
+                                                                                                                                                                                                        &   {\footnotesize\mbox{aligned function value}} \\
+        \sfunvalue & \BNFcce & \sbname \; \BNFmid \; \sfname \; \BNFmid \; (\overline{\xname}) \; \ftoSym \{ \sexp \}
+                                                                                                                                                                                                        &   {\footnotesize\mbox{standard function value}} \\
 \end{array}
 $
 }
