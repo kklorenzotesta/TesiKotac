@@ -1,4 +1,4 @@
-\section{\Scafi{} semantic}
+\section{\FSCAFI{} semantic}
 
 Since \Scafi{} is based on the notion of computations against a neighbour instead of neighbouring values it has different semantics from the higher order field calculus (\HFC) and its implementation Protelis. In order to formalize the semantic of \Scafi{} a subset of it has been considered called \textit{Featherweight \Scafi{} (\FSCAFI)} \cite{Scafi} and only the semantic of \FSCAFI has been considered. It has been proved that both \FSCAFI and \HFC{} can express programs that the other can't, but they have a non-empty intersection that can express all the self-stabilising build blocks.
 
@@ -375,6 +375,148 @@ Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expres
 Figure \ref{fig:fscafinetworkSemantics} defines the operational semantics of whole networks. It uses the same syntax of the \HFC{} network semantics and the same rules. 
 Rule \ruleNameSize{[N-FIR]} models a computational round on device $\deviceId$ by computing its local semantics on the filtered value-tree environment obtaining a value-tree $\vtree$, which is used to update the network configuration of the neighbours. Rule \ruleNameSize{[N-ENV]} models an environment change from $\Envi$ to a new well-formed environment $\Envi'$, the computational field is updated by removed the devices that are not part of the new environment and assigning an empty context to the new devices.
 
+\section{\FSCAFI{} typing}
+
+\begin{figure}[!t]{
+ \scalebox{0.9}{
+ $\begin{array}{l}
+%%%  TYPES
+\textbf{Types:}\\
+\begin{array}{rcl@{\hspace{7.5cm}}r}
+%
+\type & \BNFcce &  \tvar  \; \BNFmid \;  \builtintype \; \BNFmid \;  (\overline\type) \rightarrow \type        &   {\footnotesize \mbox{type}} \\
+%
+\typescheme & \BNFcce &  \forall\overline{\tvar}.\type      &   {\footnotesize \mbox{type scheme}} \\
+%
+%\localenv & \BNFcce & \envS{\senstate}{\overline\vtree} &   {\footnotesize \mbox{local environment}} \\
+\end{array}\\
+\hline\\[-8pt]
+%%%  TYPE RULES
+\textbf{Expression typing:} 
+  \hfill
+  \boxed{\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\type}}
+\vspace{0.1cm}
+  \\
+\begin{array}{c}
+%
+\nullsurfaceTyping{T-VAR}{
+\expTypJud{\TStypEnv}{\TtypEnv,\xname:\type}{\xname}{\type}
+}
+\qquad
+%
+{
+\surfaceTyping{T-DAT}{ \quad
+\applySubstitution{\type'}{\substitution{\overline\tvar}{\overline\type''}} = (\overline{\type})\rightarrow\type
+\qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\overline{\anyvalue}}{\overline{\type}}
+}{
+\expTypJud{\TStypEnv,\dc: \forall \overline{\tvar}. \type'}{\TtypEnv}{\dc(\overline{\anyvalue})}{\type} }
+}
+%
+\skiptransition
+%
+\surfaceTyping{T-A-FUN}{ \quad
+\expTypJud{\TStypEnv}{\;\TtypEnv,\,\overline{\xname}:\overline{\type}}{\e}{\type}
+}{ \expTypJud{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \toSymKtag{\name}{\e}}{(\overline{\type})\rightarrow\type} }
+%
+\qquad
+%
+{
+\surfaceTyping{T-N-FUN}{ \quad
+\mbox{$\funvalue$ is a (built-in or declared) function}}{
+\expTypJud{\TStypEnv,\funvalue: \forall \overline{\tvar}. \type}{\TtypEnv}{\funvalue}{\applySubstitution{\type}{\substitution{\overline\tvar}{\overline\type}}} }
+}
+%
+\skiptransition
+%
+%
+\surfaceTyping{T-APP}{ \quad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e}{(\overline{\type})\rightarrow\type} \qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\overline{\e}}{\overline{\type}} }{
+\expTypJud{\TStypEnv}{\TtypEnv}{\e(\overline{\e})}{\type} }
+%
+\skiptransition
+%
+%\surfaceTyping{T-BRANCH}{ \qquad
+%\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\btype}
+%\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{\type}
+%\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_3}{\type} }{
+%\expTypJud{\TStypEnv}{\TtypEnv}{\ifK(\e_1) \{\e_2\} \{\e_3\} }{\type} }
+%%
+%\skiptransition
+%%
+\surfaceTyping{T-REP}{ \qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\type}
+\qquad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{(\type)\to \type} }{
+\expTypJud{\TStypEnv}{\TtypEnv}{\repK(\e_1)\{\e_2\}}{\type} }
+%
+\qquad\qquad
+%
+\surfaceTyping{T-NBR}{ \qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\type}
+}{ \expTypJud{\TStypEnv}{\TtypEnv}{\nbrK\{\e\}}{\type} }
+%
+\skiptransition
+%
+\surfaceTyping{T-FOLD}{ \qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\type}
+\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{(\type, \type) \to \type}
+\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_3}{\type} }{
+\expTypJud{\TStypEnv}{\TtypEnv}{\foldK(\e_1) (\e_2) \{\e_3\} }{\type} }
+%
+\skiptransition
+%
+\end{array}
+\\
+\textbf{Function typing:} 
+  \hfill
+  \boxed{\funTypJud{\TStypEnv}{\FUNCTION}{\typescheme}}
+  \\
+\begin{array}{c}
+%
+\surfaceTyping{T-FUNCTION}{
+\qquad
+\expTypJud{\TStypEnv,\,\fname:\forall\emptyseq.(\overline{\type})\rightarrow\type}{\overline{\xname}:\overline{\type}}{\e}{\type}
+\qquad
+\overline{\tvar}=\FTV{(\overline{\type})\rightarrow\type}
+}{ \funTypJud{\TStypEnv}{\defK \; \fname (\overline{\xname}) \; \eqSymK{\e}}{\forall\overline{\tvar}.(\overline{\type})\rightarrow\type}}
+%
+\skiptransition
+%
+\end{array}
+\\
+\textbf{Program typing:} 
+  \hfill
+  \boxed{\proTypJud{\PROGRAM}{\type}}
+  \\
+\begin{array}{c}
+%
+\surfaceTyping{T-PROGRAM}{
+\\
+\TStypEnv_0=\OStypEnv
+\\
+\FUNCTION_i = \defK \; \fname_i (\_) \; \eqSymK{\_}
+\qquad
+\funTypJud{\TStypEnv_{i-1}}{\FUNCTION_i}{\typescheme_i}
+\qquad
+\TStypEnv_i=\TStypEnv_{i-1},\, \fname_i:\typescheme_i
+\qquad
+ (i \in 1..n)
+\\
+\expTypJud{\TStypEnv_n}{\emptyset}{\e}{\type}
+}{ \proTypJud{\FUNCTION_1\cdots\FUNCTION_n  \;
+\e}{\type}}
+\end{array}
+\end{array}$}
+} \caption{Type rules for expressions, function declarations, and programs. from \cite{Scafi}} \label{fig:fscafiTyping}
+\end{figure}
+
+Figure \ref{fig:fscafiTyping} present a type system for \FSCAFI from \cite{Scafi}. A type $\type$ can be either a type variable $\tvar$, a built-in type $\builtintype$ or a function type $(\overline\type) \rightarrow \type$. Type schemes $\typescheme$ can produce regulart types $\type$ by replacing the type variables with a type. The typing jedgement rules are given in the form $\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\type}$, meaning that $\e$ has type $\type$ under the type-scheme assumptions $\TStypEnv$ and the type assumtions $\TtypEnv$. A type scheme environement $\TStypEnv$ collect the type schemes for built-in constructors, built-in operators and user-defined functions. A type environment $\TtypEnv$ collects the types for program variables. $\OStypEnv$ denotes the distinguished built-in type-scheme environment for built-in constructors and built-in functions. $\FTV{\type}$ denotes the set of type variables occurring in the type $\type$.
+
+Rule \ruleNameSize{[T-VAR]} assigns a type to a variable $\xname$ by looking the type assumptions $\TtypEnv$. Rule \ruleNameSize{[T-DAT]} assigns a type to a data value by extracting the type scheme of the data constructor from the type-scheme environment $\TStypEnv$. Rules \ruleNameSize{[T-A-FUN]} and \ruleNameSize{[T-N-FUN]} assign a type to anonymous function and built-in or declared function names, respectively. Rule \ruleNameSize{[T-APP]} assigns a type to a function application. Rule \ruleNameSize{[T-REP]} assigns a type to a $\mathtt{rep}$-expression, ensuring that the initial value and the domain and range of the body have the same type. Rule \ruleNameSize{[T-NBR]} assings a type to a $\mathtt{nbr}$-expression that has the same type as the expression inside the operator. Rule \ruleNameSize{[T-FOLD]} assigns a type to a $\mathtt{foldhood}$-expression, ensuring that $\e_1$ and $\e_3$ have the same type $\type$ and that $\e_2$ has type $(\type,\type) \to \type$.
+
+Rule \ruleNameSize{[T-FUNCTION]} assigns a type scheme to a user defined function. Rule \ruleNameSize{[M-PROGRAM]} allows to type a program with the type of the main expression by adding to the type-scheme environment the type schemes of all the user defined functions.
+
 \section{\Scafi{} and HFC semantics alignment}
 
 \begin{figure}[!t]
@@ -431,3 +573,135 @@ The \HFC{} program computes the number of neighbours while the \FSCAFI{} program
 The reason behind the third rule is exaplained by considering for example a buil-in function $\mathtt{sorthood}$ which rearranges values $\fvalue(\deviceId)$ in increasing order of neighbour identifiers $\deviceId$. So given a neighbouring value $\fvalue = \envmap{\overline\deviceId}{\overline\lvalue}$ and assuming $\deviceId_1 \leq \ldots \leq \deviceId_n$ it returns a neighbouring value $\fvalue' = \envmap{\deviceId_1}{\lvalue_{\pi_1}}, \ldots, \envmap{\deviceId_n}{\lvalue_{\pi_n}}$. this function is conceivable in \HFC{} but it's impossible to implement in \FSCAFI{}.
 
 Those restriction rules can be formalized in \FSCAFI{} by a new set of more restrictive typing rules, obtaining a fragment of the language called \textit{Aligned} \FSCAFI{}. It can be proved \cite{Scafi} that a well-typed program of one of the fragments can be transformed into a well-type program of the other with the same behavior. It can also be proved that Aligned \FSCAFI{} is Turing universal and all the base programming patterns provided in \cite{SelfStabilizing} for designing self-stabilising applications can be rewritten to fit into the fragment.
+
+\begin{figure}[t!]
+\scalebox{0.9}{$\begin{array}{l}
+%%%  TYPES
+\begin{array}{r@{\hspace{1.0cm}}c}
+	\begin{array}{rcl@{\hspace{1cm}}r}
+		\multicolumn{4}{l}{\textbf{Types:}} \\[1pt]
+		\type	& \BNFcce & \tvar \; \BNFmid \; {\rtype} \; \BNFmid \; \ltype											   &   {\footnotesize \mbox{type}} \\
+		\ltype	& \BNFcce & \ltvar \; \BNFmid \; {\stype} \; \BNFmid \; (\overline{\type})\to\ftype	 & {\footnotesize \mbox{local type}} \\
+		\rtype	& \BNFcce & \rtvar \; \BNFmid \; \stype \; \BNFmid \; \ftype										  &   {\footnotesize \mbox{return type}} \\
+		\stype	& \BNFcce & \stvar \; \BNFmid \; \builtintype \; \BNFmid \; (\overline{\ltype})\to\stype	&   {\footnotesize \mbox{local return type}} \\
+		\ftype	& \BNFcce & \ftypeOf{\stype}																							&   {\footnotesize \mbox{field type}} \\[2pt]
+		\multicolumn{4}{l}{\textbf{Local type schemes:}} \\[1pt]
+		\ltypescheme & \BNFcce & \forall\overline{\tvar}\overline{\ltvar}\overline{\rtvar}\overline{\stvar}.\ltype
+																																							  &   {\footnotesize \mbox{local type scheme}} \\
+	\end{array}
+	&
+	{\raisebox{-1.3cm}{
+	\begin{tikzpicture}[xscale=1.5,yscale=1.1]
+		\draw[ultra thick] (-0.5,0) circle (1cm);
+		\draw[ultra thick] (0.5,0) circle (1cm);
+		\node[draw,rectangle] (TT) at (0, 1.25) {$\type$};
+		\node[draw,rectangle] (LT) at (-1, 0.5) {$\ltype$};
+		\node[draw,rectangle] (RT) at (1, 0.5) {$\rtype$};
+		\node[draw,rectangle] (ST) at (0, -0.5) {$\stype$};
+		\node (B) at (0.1, 0.5) {$\builtintype$};
+		\node (TxS) at (0, 0.05) {$(\overline\ltype) \rightarrow \stype$};
+		\node (F) at (0.8, -0.4) {$\ftype$};
+		\node (TxF) at (-0.95, -0.3) {$(\overline\type) \rightarrow \ftype$};
+	\end{tikzpicture}
+	}}
+\end{array} \\[38pt]
+\hline\\[-8pt]
+%%%  EXPRESSIONS
+\textbf{~~Expression typing:} \hfill \boxed{\expTypJud{\LTStypEnv}{\TtypEnv}{\e}{\type}} \\[5pt]
+\quad
+\begin{array}{c}
+	\nullsurfaceTyping{T'-VAR}{
+		\expTypJud{\LTStypEnv}{\TtypEnv, \xname:\type}{\xname}{\type}
+	}
+	\qquad
+	\surfaceTyping{T'-DAT}{ \quad
+		\applySubstitution{\stype'}{\substitution{\overline\stvar}{\overline\stype''}} = (\overline{\stype})\rightarrow\stype
+		\qquad
+		\expTypJud{\TStypEnv}{\TtypEnv}{\overline{\lvalue}}{\overline{\stype}}
+	}{
+		\expTypJud{\TStypEnv,\dc: \forall\overline\stvar. \stype'}{\TtypEnv}{\dc(\overline{\lvalue})}{\stype}
+	}
+	\skiptransition
+	\surfaceTyping{T'-A-FUN}{  \quad
+		\overline{\yname}=\FV{(\overline{\xname}) \; \toSymKtag{\name}{\e}} \quad
+		{\expTypJud{\LTStypEnv}{\TtypEnv}{\overline\yname}{\overline{\ltype}}} \quad
+		\expTypJud{\LTStypEnv}{\TtypEnv, \overline{\xname} : \overline\type}{\e}{\rtype}
+	}{
+		\expTypJud{\LTStypEnv}{\TtypEnv}{(\overline{\xname}) \; \toSymKtag{\name}{\e}}{(\overline\type) \rightarrow \rtype}
+	}
+	\skiptransition
+	\surfaceTyping{T'-N-FUN}{ \quad
+		\mbox{$\funvalue$ is a (built-in or declared) function}
+	}{
+		\expTypJud{\TStypEnv,\funvalue : \forall\overline\tvar\overline\ltvar\overline\rtvar\overline\stvar.\ltype}{\TtypEnv}{\funvalue}{\applySubstitution{\ltype}{\substitution{\overline\tvar}{\overline\type},~ \substitution{\overline{\ltvar}}{\overline{\ltype}},~ \substitution{\overline{\rtvar}}{\overline{\rtype}},~ \substitution{\overline{\stvar}}{\overline{\stype}}}}
+	}
+	\skiptransition
+	\surfaceTyping{T'-APP}{ \qquad
+		\expTypJud{\LTStypEnv}{\TtypEnv}{\e}{(\overline\type)\rightarrow\rtype} \qquad
+		\expTypJud{\LTStypEnv}{\TtypEnv}{\overline{\e}}{\overline\type}
+	}{
+		\expTypJud{\LTStypEnv}{\TtypEnv}{\e(\overline{\e})}{\rtype}
+	}
+	\skiptransition
+	\surfaceTyping{T'-REP}{ \quad
+		\expTypJud{\LTStypEnv}{\TtypEnv}{\e_1}{\stype} \qquad
+		\expTypJud{\LTStypEnv}{\TtypEnv}{\e_2}{\stype \rightarrow \stype}
+	}{
+		\expTypJud{\LTStypEnv}{\TtypEnv}{\repK(\e_1)\{\e_2\}}{\stype}
+	}
+	\qquad
+	\surfaceTyping{T'-NBR}{ \quad
+		\expTypJud{\LTStypEnv}{\TtypEnv}{\e}{\stype}
+	}{
+		\expTypJud{\LTStypEnv}{\TtypEnv}{\nbrK\{\e\}}{\ftypeOf{\stype}}
+	}
+	\skiptransition
+	\surfaceTyping{T'-FOLD}{ \qquad
+		\begin{array}{ll}
+			\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\stype}
+			& \quad 
+			\expTypJud{\TStypEnv}{\TtypEnv}{\e_3}{\ftypeOf{\stype} \text{ or } \stype}
+			\\
+			\expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{(\stype, \stype) \rightarrow \stype}
+			& \quad 
+	        \expTypJud{\TStypEnv}{\TtypEnv}{\overline\xname}{\overline\ltype}
+	        \quad\text{where}\; \overline\xname = \FV{\e_3}
+		\end{array}
+	}{
+		\expTypJud{\TStypEnv}{\TtypEnv}{\foldK(\e_1) (\e_2) \{\e_3\} }{\stype}
+	}
+\end{array} \\~\\
+%%%  FUNCTIONS
+\textbf{~~Function typing:} \hfill \boxed{\funTypJud{\LTStypEnv}{\FUNCTION}{\ltypescheme}} \\[5pt]
+\qquad \qquad
+\begin{array}{c}
+	\surfaceTyping{T'-FUNCTION}{ \qquad
+		\begin{array}{ll}
+			\expTypJud{\LTStypEnv, \fname: (\overline\type)\to\rtype}{\overline{\xname}:\overline{\type}}{\e}{\rtype} \qquad
+			\overline{\tvar}\overline{\ltvar}\overline{\rtvar}\overline{\stvar}=\FTV{(\overline{\type})\rightarrow\rtype} %\\
+			%\text{arguments not occurring in } \e \text{ are local}
+		\end{array}
+	}{
+		\funTypJud{\LTStypEnv}{\defK \; \fname (\overline{\xname}) \; \eqSymK{\e}}{
+			\forall\overline{\tvar}\overline{\ltvar}\overline{\rtvar}\overline{\stvar}.(\overline{\type})\rightarrow\rtype
+	}}
+\end{array} \\~\\
+%%%  PROGRAMS
+\textbf{~~Program typing:} \hfill {\boxed{\funTypJud{\LTStypEnv_0}{\PROGRAM}{\type}}} \\[5pt]
+\qquad \quad
+\begin{array}{c}
+	\surfaceTyping{T'-PROGRAM}{ \\
+		\FUNCTION_i=(\defK \; \fname_i (\_) \; \_) \qquad
+		\funTypJud{\LTStypEnv_{i-1}}{\FUNCTION_i}{\ltypescheme_i} \qquad
+		\LTStypEnv_i=\LTStypEnv_{i-1},\, \fname_i:\ltypescheme_i \qquad
+		(i \in 1..n) \\
+		\expTypJud{\LTStypEnv_n}{\emptyset}{\e}{\type}
+	}{
+		\funTypJud{{\LTStypEnv_0}}{\FUNCTION_1\cdots\FUNCTION_n  \; \e}{{\type}}
+	}
+\end{array}
+\end{array}$}
+\caption{Hindley-Milner typing for Aligned \FSCAFI{} expressions, function declarations, and programs. from \cite{Scafi}} \label{fig:alignfscafityping}
+\end{figure}
+
+Figure \ref{fig:alignfscafityping} shows the typing rules of aligned \FSCAFI. The types has been divided in four categories, of which only one can appear as a field type from an $\mathtt{nbr}$-expression. The restriction R1 is further implemented by requiring in the rule \ruleNameSize{[T-FOLD]} that each free variable occurring in $\e_3$ has a local type. The restriction R2 is implemented by restricting local function types to $(\overline{\type})\to\ftype$ instead of $(\overline{\type})\to\rtype$. Restriction R3 is implicitly valid for all \FSCAFI programs given the semantic rules.
