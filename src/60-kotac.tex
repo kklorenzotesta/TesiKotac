@@ -97,9 +97,9 @@ The $\mathtt{ConcreteAggregateContext}$ contains then a field named $\mathtt{loc
         \sfunvalue & \BNFcce & \sbname \; \BNFmid \; \sfname \; \BNFmid \; (\overline{\xname}) \; \ftoSym \{ \sexp \}
                                                                                                                                                                                                         &   {\footnotesize\mbox{standard function value}} \\
         \hline \\[-6pt]
-        \AFUNCTION & \BNFcce &  \funK \; \afname (\overline{\xname}) \; \{ \alignK(\afname){\{\aexp\}} \}
+        \AFUNCTION & \BNFcce &  \funK \; \afname (\overline{\xname}) \; \{ \alignK{\{\aexp\}} \}
                                                                                                                                                                                                         &   {\footnotesize \mbox{aggregate function declaration}} \\[3pt]
-        \aexp & \BNFcce & \xname \, \BNFmid \, \anyvalue  \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}} \, \BNFmid \, \aexp(\overline{\aexp}) \, \BNFmid \,  &   {\footnotesize \mbox{aggregate expression}} \\
+        \aexp & \BNFcce & \xname \, \BNFmid \, \anyvalue  \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK\{\aexp\}\}} \, \BNFmid \, \aexp(\overline{\aexp}) \, \BNFmid \,  &   {\footnotesize \mbox{aggregate expression}} \\
         && \repK(\aexp)\{ (\xname) \ftoSym \aexp \} \, \BNFmid \, \nbrK\{\aexp\} \, \BNFmid \, \shareK(\aexp)\{(\xname) \ftoSym \aexp \} \\[3pt]
                 \anyvalue & \BNFcce &  \lvalue \; \BNFmid \; \funvalue \; \BNFmid \; \fvalue
                 &{ \mbox{\footnotesize value}}
@@ -109,7 +109,7 @@ The $\mathtt{ConcreteAggregateContext}$ contains then a field named $\mathtt{loc
                 \\[3pt]
                 \fvalue & \BNFcce &  \envmap{\overline\deviceId}{\overline\lvalue}
                 &{ \mbox{\footnotesize neighbouring field value}} \\
-        \afunvalue & \BNFcce & \abname \; \BNFmid \; \afname \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}}
+        \afunvalue & \BNFcce & \abname \; \BNFmid \; \afname \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK\{\aexp\}\}}
                                                                                                                                                                                                         &   {\footnotesize\mbox{aggregate function value}} \\
 \end{array}
 $
@@ -128,7 +128,7 @@ A value can be either an aggregate local value $\alvalue$, a standard local valu
 
 Aggregate local values can be either a data value $\dcOf{\dc}{\overline\lvalue}$, in which $\dc$ is a data constructor and $\overline{\lvalue}$ are local value arguments, or an aggregate function value $\afunvalue$. Standard local values can be either a data value $\dcOf{\dc}{\overline\slvalue}$, in which $\dc$ is a data constructor and $\overline{\slvalue}$ are standard local value arguments, or a standard function value $\sfunvalue$.
 
-An aggregate function value $\afunvalue$ can be an aggregate built-in function $\abname$ (e.g. nbrsense, which returns a field of the distances from the neighbours, or maxhood, which returns the maximum value in the argument field), a declared aggregate function $\afname$ or an anonymous aggregate function value $ (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}}$, where $\overline{\xname}$ are variable names for the formal parameters, $\aexp$ is the body of the function and $\name$ is a \textit{tag} that uniquely identifies the function and doesn't occours in the source program. A standard function value $\sfunvalue$ can be a standard built-in function $\sbname$ (e.g. a temperature sensor or a pure mathematical or logical function), a declare standard function $\sfname$ or an anonymous standard function value $(\overline{\xname}) \; \ftoSym \{ \sexp \}$, where $\overline{\xname}$ are variable names for the formal parameters and $\sexp$ is the body of the function.
+An aggregate function value $\afunvalue$ can be an aggregate built-in function $\abname$ (e.g. nbrsense, which returns a field of the distances from the neighbours, or maxhood, which returns the maximum value in the argument field), a declared aggregate function $\afname$ or an anonymous aggregate function value $ (\overline{\xname}) \; \toSym{\name}{\{\alignK\{\aexp\}\}}$, where $\overline{\xname}$ are variable names for the formal parameters, $\aexp$ is the body of the function and $\name$ is a \textit{tag} that uniquely identifies the function and doesn't occours in the source program. A standard function value $\sfunvalue$ can be a standard built-in function $\sbname$ (e.g. a temperature sensor or a pure mathematical or logical function), a declare standard function $\sfname$ or an anonymous standard function value $(\overline{\xname}) \; \ftoSym \{ \sexp \}$, where $\overline{\xname}$ are variable names for the formal parameters and $\sexp$ is the body of the function.
 
 \subsection{\FKotac{} semantics}
 
@@ -176,21 +176,21 @@ An aggregate function value $\afunvalue$ can be an aggregate built-in function $
 \begin{array}{ll}
 \nameOf(\fname) = \fname \qquad \nameOf(\bname) = \bname
 &
-\nameOf((\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}) = \name
+\nameOf((\overline{\xname}) \; \toSym{\name}{\{\alignK\{\e\}\}}) = \name
 \\
-\args{\fname} = \overline{\xname} \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
+\args{\fname} = \overline{\xname} \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK{\{\e\}} \}
 &
 \args{\fname} = \overline{\xname} \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \e \}
 \\
-\args{(\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}} = \overline{\xname}
+\args{(\overline{\xname}) \; \toSym{\name}{\{\alignK\{\e\}\}}} = \overline{\xname}
 &
 \args{(\overline{\xname}) \; \ftoSym \{ \e \}} = \overline{\xname}
 \\
-\body{\fname} = \e  \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK(\fname){\{\e\}} \}
+\body{\fname} = \e  \quad \mbox{if } \, \funK \; \fname (\overline{\xname}) \; \{ \alignK{\{\e\}} \}
 &
 \body{\fname} = \e  \quad \mbox{if } \,  \funK \; \fname (\overline{\xname}) \; \{ \e \}
 \\
-\body{(\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}} = \e
+\body{(\overline{\xname}) \; \toSym{\name}{\{\alignK\{\e\}\}}} = \e
 &
 \body{(\overline{\xname}) \; \ftoSym \{ \e \}} = \e
 \end{array}
@@ -383,7 +383,7 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 %%%  TYPES
 \textbf{Types:}\\
 \begin{array}{rcl@{\hspace{7.5cm}}r}
-\type & \BNFcce &  \tvar  \; \BNFmid \;  \builtintype \; \BNFmid \;  (\overline\type) \rightarrow \type        &   {\footnotesize \mbox{type}} \\
+\type & \BNFcce &  \tvar  \; \BNFmid \;  \builtintype \; \BNFmid \;  (\overline\type) \rightarrow \type  \; \BNFmid \; \ftypeOf{\builtintype}       &   {\footnotesize \mbox{type}} \\
 %
 \tctx & \BNFcce &  \aann \; \BNFmid \;  \sann &   {\footnotesize \mbox{context}} \\
 %
@@ -421,16 +421,16 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 \surfaceTyping{T-DAT}{ \quad
 \applySubstitution{\type'}{\substitution{\overline\tvar}{\overline\type''}} = (\overline{\type})\rightarrow\type
 \qquad
-\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\overline{\anyvalue}}{\overline{\type}}
+\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\overline{\lvalue}}{\overline{\type}}
 }{
-\expTypJudC{\tctx}{\TStypEnv,\dc: \forall \overline{\tvar}. \type'}{\TtypEnv}{\dc(\overline{\anyvalue})}{\type} }
+\expTypJudC{\tctx}{\TStypEnv,\dc: \forall \overline{\tvar}. \type'}{\TtypEnv}{\dc(\overline{\lvalue})}{\type} }
 }
 %
 \skiptransition
 %
 \surfaceTyping{T-A-AFUN}{ \quad
 \expTypJudC{\aann}{\TStypEnv}{\;\TtypEnv,\,\overline{\xname}:\overline{\type}}{\e}{\type}
-}{ \expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}}{(\overline{\type})\rightarrow\type}}
+}{ \expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \; \toSym{\name}{\{\alignK\{\e\}\}}}{(\overline{\type})\rightarrow\type}}
 %
 \skiptransition
 %
@@ -451,21 +451,14 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 {
 \surfaceTyping{T-N-SFUN}{ \quad
 \mbox{$\sfunvalue$ is a (built-in or declared) standard function}}{
-\expTypJudC{\tctx}{\TStypEnv,\sfunvalue: \forall \overline{\tvar}. \type}{\TtypEnv}{\sfunvalue}{\applySubstitution{\type}{\substitution{\overline\tvar}{\overline\type}}} }
+\expTypJudC{\sann}{\TStypEnv,\sfunvalue: \forall \overline{\tvar}. \type}{\TtypEnv}{\sfunvalue}{\applySubstitution{\type}{\substitution{\overline\tvar}{\overline\type}}} }
 }
 %
 \skiptransition
 %
-\surfaceTyping{T-AAPP}{ \quad
-\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e}{(\overline{\type})\rightarrow\type} \qquad
-\expTypJudC{\overline{\tctx}}{\TStypEnv}{\TtypEnv}{\overline{\e}}{\overline{\type}} }{
-\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e(\overline{\e})}{\type} }
-%
-\skiptransition
-%
-\surfaceTyping{T-SAPP}{ \quad
-\expTypJudC{\sann}{\TStypEnv}{\TtypEnv}{\e}{(\overline{\type})\rightarrow\type} \qquad
-\expTypJudC{\sann}{\TStypEnv}{\TtypEnv}{\overline{\e}}{\overline{\type}} }{
+\surfaceTyping{T-APP}{ \quad
+\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\e}{(\overline{\type})\rightarrow\type} \qquad
+\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\overline{\e}}{\overline{\type}} }{
 \expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\e(\overline{\e})}{\type} }
 %
 \skiptransition
@@ -479,23 +472,22 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 %\skiptransition
 %%
 \surfaceTyping{T-REP}{ \qquad
-\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\e_1}{\type}
-\qquad \expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e_2}{(\type)\to \type} }{
-\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\repK(\e_1)\{\e_2\}}{\type} }
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e_1}{\type}
+\qquad \expTypJudC{\aann}{\TStypEnv}{\TtypEnv,\xname:\type}{\e_2}{\type} }{
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\repK(\e_1)\{(\xname) \ftoSym \e_2\}}{\type} }
 %
 \qquad\qquad
 %
 \surfaceTyping{T-NBR}{ \qquad
-\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\e}{\type}
-}{ \expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\nbrK\{\e\}}{\type} }
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e}{\builtintype}
+}{ \expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\nbrK\{\e\}}{\ftypeOf{\builtintype}} }
 %
 \skiptransition
 %
 \surfaceTyping{T-SHARE}{ \qquad
-\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\type}
-\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{(\type, \type) \to \type}
-\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_3}{\type} }{
-\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\foldK(\e_1) (\e_2) \{\e_3\} }{\type} }
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e_1}{\builtintype}
+\qquad \expTypJudC{\aann}{\TStypEnv}{\TtypEnv,\xname:\ftypeOf{\builtintype}}{\e_2}{\builtintype} }{
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\shareK(\e_1)\{(\xname) \ftoSym \e_2 \}}{\builtintype} }
 %
 \skiptransition
 %
@@ -507,12 +499,22 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
   \\
 \begin{array}{c}
 %
-\surfaceTyping{T-FUNCTION}{
+\surfaceTyping{T-AFUNCTION}{
 \qquad
-\expTypJud{\TStypEnv,\,\fname:\forall\emptyseq.(\overline{\type})\rightarrow\type}{\overline{\xname}:\overline{\type}}{\e}{\type}
+\expTypJudC{\aann}{\TStypEnv,\,\afname:\forall\emptyseq.(\overline{\type})\rightarrow\type}{\overline{\xname}:\overline{\type}}{\e}{\type}
 \qquad
 \overline{\tvar}=\FTV{(\overline{\type})\rightarrow\type}
-}{ \funTypJud{\TStypEnv}{\defK \; \fname (\overline{\xname}) \; \eqSymK{\e}}{\forall\overline{\tvar}.(\overline{\type})\rightarrow\type}}
+}{ \funTypJud{\TStypEnv}{\funK \; \afname (\overline{\xname}) \; \{ \alignK{\{\e\}} \}}{\forall\overline{\tvar}.(\overline{\type})\rightarrow\type}}
+%
+\skiptransition
+%
+%
+\surfaceTyping{T-SFUNCTION}{
+\qquad
+\expTypJudC{\sann}{\TStypEnv,\,\sfname:\forall\emptyseq.(\overline{\type})\rightarrow\type}{\overline{\xname}:\overline{\type}}{\e}{\type}
+\qquad
+\overline{\tvar}=\FTV{(\overline{\type})\rightarrow\type}
+}{ \funTypJud{\TStypEnv}{\funK \; \sfname (\overline{\xname}) \; \{ \e\}}{\forall\overline{\tvar}.(\overline{\type})\rightarrow\type}}
 %
 \skiptransition
 %
@@ -528,7 +530,7 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 \\
 \TStypEnv_0=\OStypEnv
 \\
-\FUNCTION_i = \defK \; \fname_i (\_) \; \eqSymK{\_}
+\FUNCTION_i = \funK \; \fname_i (\_) \; \feqSymK{\_}
 \qquad
 \funTypJud{\TStypEnv_{i-1}}{\FUNCTION_i}{\typescheme_i}
 \qquad
@@ -536,7 +538,7 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 \qquad
  (i \in 1..n)
 \\
-\expTypJud{\TStypEnv_n}{\emptyset}{\e}{\type}
+\expTypJudC{\aann}{\TStypEnv_n}{\emptyset}{\e}{\type}
 }{ \proTypJud{\FUNCTION_1\cdots\FUNCTION_n  \;
 \e}{\type}}
 \end{array}
