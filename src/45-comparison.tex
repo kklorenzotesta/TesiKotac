@@ -508,7 +508,7 @@ Rule \ruleNameSize{[N-FIR]} models a computational round on device $\deviceId$ b
 \e}{\type}}
 \end{array}
 \end{array}$}
-} \caption{Type rules for expressions, function declarations, and programs. from \cite{Scafi}} \label{fig:fscafiTyping}
+} \caption{Type rules for \FSCAFI{} expressions, function declarations, and programs. from \cite{Scafi}} \label{fig:fscafiTyping}
 \end{figure}
 
 Figure \ref{fig:fscafiTyping} present a type system for \FSCAFI from \cite{Scafi}. A type $\type$ can be either a type variable $\tvar$, a built-in type $\builtintype$ or a function type $(\overline\type) \rightarrow \type$. Type schemes $\typescheme$ can produce regulart types $\type$ by replacing the type variables with a type. The typing jedgement rules are given in the form $\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\type}$, meaning that $\e$ has type $\type$ under the type-scheme assumptions $\TStypEnv$ and the type assumtions $\TtypEnv$. A type scheme environement $\TStypEnv$ collect the type schemes for built-in constructors, built-in operators and user-defined functions. A type environment $\TtypEnv$ collects the types for program variables. $\OStypEnv$ denotes the distinguished built-in type-scheme environment for built-in constructors and built-in functions. $\FTV{\type}$ denotes the set of type variables occurring in the type $\type$.

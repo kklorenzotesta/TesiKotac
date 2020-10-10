@@ -71,41 +71,48 @@ Both $\mathtt{ValueTree}$ and $\mathtt{ValueEnvironment}$ are not designed to be
 
 The $\mathtt{ConcreteAggregateContext}$ contains then a field named $\mathtt{localTree}$ which is a $\mathtt{ValueTree}$ in which are stored the data for the local interactions, i.e. the rep operator. Another field named $\mathtt{neighboringTree}$ is a $\mathtt{ValueTree}$ in which are stored the data for the neighbouring interactions, i.e. the share and nbr operators, this tree will be sent to the neighbours. Finally a field named $\mathtt{neighboringEnvironment}$ is a $\mathtt{ValueEnvironment}$ holding all the last $\mathtt{ValueTree}$s sent by the neighbours.
 
-\section{\FKotac semantics}
+\section{\FKotac}
+
+\subsection{\FKotac{} syntax}
 
 \begin{figure}[t]
 \centering
 \centerline{$
 \begin{array}{l@{\hspace{1mm}}c@{\hspace{1mm}}l@{\hspace{-8mm}}r}
-        \PROGRAM & \BNFcce & \overline{\FUNCTION} \; \e
+        \PROGRAM & \BNFcce & \overline{\FUNCTION} \; \aexp
                                                                                                                                                                                                         &   {\footnotesize \mbox{program}} \\[3pt]
         \FUNCTION & \BNFcce &  \AFUNCTION \, \BNFmid \, \SFUNCTION
                                                                                                                                                                                                         &   {\footnotesize \mbox{function declaration}} \\[3pt]
-        \AFUNCTION & \BNFcce &  \funK \; \afname (\overline{\xname}) \; \{ \alignK(\afname){\{\aexp\}} \}
-                                                                                                                                                                                                        &   {\footnotesize \mbox{aligned function declaration}} \\[3pt]
-        \SFUNCTION & \BNFcce &  \funK \; \sfname (\overline{\xname}) \; \{ \sexp \}
-                                                                                                                                                                                                        &   {\footnotesize \mbox{standard function declaration}} \\[3pt]
-        \aexp & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \aexp(\overline{\aexp}) \, \BNFmid \, \repK(\aexp)\{ (\xname) \ftoSym \aexp \} \, \BNFmid \, \nbrK\{\aexp\} \, \BNFmid \,
-                                                                                                                                                                                                        &   {\footnotesize \mbox{aligned expression}} \\
-        && \shareK(\aexp)\{(\xname) \ftoSym \aexp \} \\[3pt]
-        \sexp & \BNFcce & \xname \, \BNFmid \, \slvalue \, \BNFmid \, \sexp(\overline{\sexp})
-                                                                                                                                                                                                        &   {\footnotesize \mbox{standard expression}} \\[3pt]
         \hline \\[-6pt]
-                \anyvalue & \BNFcce &  \alvalue \; \BNFmid \; \slvalue \; \BNFmid \; \fvalue
+        \AFUNCTION & \BNFcce &  \funK \; \afname (\overline{\xname}) \; \{ \alignK(\afname){\{\aexp\}} \}
+                                                                                                                                                                                                        &   {\footnotesize \mbox{aggregate function declaration}} \\[3pt]
+        \aexp & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \aexp(\overline{\aexp}) \, \BNFmid \, \repK(\aexp)\{ (\xname) \ftoSym \aexp \} \, \BNFmid \, \nbrK\{\aexp\} \, \BNFmid \,
+                                                                                                                                                                                                        &   {\footnotesize \mbox{aggregate expression}} \\
+        && \shareK(\aexp)\{(\xname) \ftoSym \aexp \} \\[3pt]
+                \anyvalue & \BNFcce &  \lvalue \; \BNFmid \; \fvalue
                 &{ \mbox{\footnotesize value}}
                 \\[3pt]
-              \alvalue & \BNFcce &  \dcOf{\dc}{\overline\alvalue} \; \BNFmid \; \afunvalue
-                &{ \mbox{\footnotesize aligned local value}}
+                \lvalue & \BNFcce &  \alvalue \; \BNFmid \; \slvalue
+                &{ \mbox{\footnotesize local value}}
                 \\[3pt]
-              \slvalue & \BNFcce &  \dcOf{\dc}{\overline\slvalue} \; \BNFmid \; \sfunvalue
-                &{ \mbox{\footnotesize standard local value}}
+              \alvalue & \BNFcce &  \dcOf{\dc}{\overline\lvalue} \; \BNFmid \; \afunvalue
+                &{ \mbox{\footnotesize aggregate local value}}
                 \\[3pt]
                 \fvalue & \BNFcce &  \envmap{\overline\deviceId}{\overline\lvalue}
                 &{ \mbox{\footnotesize neighbouring field value}} \\
         \afunvalue & \BNFcce & \abname \; \BNFmid \; \afname \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}}
-                                                                                                                                                                                                        &   {\footnotesize\mbox{aligned function value}} \\
+                                                                                                                                                                                                        &   {\footnotesize\mbox{aggregate function value}} \\
+        \hline \\[-6pt]
+        \SFUNCTION & \BNFcce &  \funK \; \sfname (\overline{\xname}) \; \{ \sexp \}
+                                                                                                                                                                                                        &   {\footnotesize \mbox{standard function declaration}} \\[3pt]
+        \sexp & \BNFcce & \xname \, \BNFmid \, \slvalue \, \BNFmid \, \sexp(\overline{\sexp})
+                                                                                                                                                                                                        &   {\footnotesize \mbox{standard expression}} \\[3pt]
+              \slvalue & \BNFcce &  \dcOf{\dc}{\overline\slvalue} \; \BNFmid \; \sfunvalue
+                &{ \mbox{\footnotesize standard local value}}
+                \\[3pt]
         \sfunvalue & \BNFcce & \sbname \; \BNFmid \; \sfname \; \BNFmid \; (\overline{\xname}) \; \ftoSym \{ \sexp \}
                                                                                                                                                                                                         &   {\footnotesize\mbox{standard function value}} \\
+
 \end{array}
 $
 }
@@ -113,17 +120,19 @@ $
 \label{fig:fkotacsyntax}
 \end{figure}
 
-In order to formalize the semantic of \Kotac{} a subset of it has been considered called \textit{Featherweight \Kotac{} (\FKotac{})}. The syntax of \FKotac is shown in figure \ref{fig:fkotacsyntax}, it focus on the aggregate constructs ignoring the Kotlin specific features. Unlike \FSCAFI, which considers only aggregate functions (which require alignment), in \FKotac has been considered also standard function, i.e. functions that don't require alignment and don't allow to call aggregate functions and aggregate constructs in their body. 
+In order to formalize the semantic of \Kotac{} a subset of it has been considered called \textit{Featherweight \Kotac{} (\FKotac{})}. The syntax of \FKotac is shown in figure \ref{fig:fkotacsyntax}, it focus on the aggregate constructs ignoring the Kotlin specific features. Unlike \FSCAFI, which considers only aggregate functions (which require alignment), in \FKotac has been considered also standard function, i.e. kotlin functions that don't require alignment and don't allow to call aggregate functions and aggregate constructs in their body. 
 
-A program $\PROGRAM$ is a sequence of non-aligned function declarations $\overline{\SFUNCTION}$ followed by a sequence of aligned function declarations $\overline{\AFUNCTION}$ and followed by a main aligned expression $\aexp$. An aligned function declaration $\AFUNCTION$ defines a (possibly recursive) aligned function named $\afname$, with a sequence of formal parameters $\overline{\xname}$ and a body aligned expression $\aexp$. A non-aligned function declaration $\SFUNCTION$ defines a (possibly recursive) non aligned function named $\sfname$ with a sequence of formal parameters $\overline{\xname}$ and a body non-aligned expression $\sexp$. 
+A program $\PROGRAM$ is a sequence of function declarations $\overline{\FUNCTION}$, each of which can be either an aggregate function $\AFUNCTION$ or a standard function $\SFUNCTION$, followed by a main aggregate expression $\aexp$. An aggregate function declaration $\AFUNCTION$ defines a (possibly recursive) aggregate function named $\afname$, with a sequence of formal parameters $\overline{\xname}$ and a body aggregate expression $\aexp$. A standard function declaration $\SFUNCTION$ defines a (possibly recursive) standard function named $\sfname$ with a sequence of formal parameters $\overline{\xname}$ and a body standard expression $\sexp$. 
 
-An aligned expression $\aexp$ can be a variable $\xname$, a value $\anyvalue$, a function application $\aexp(\overline{\aexp})$ where $\aexp$ evaluates to a function $\afunvalue$ or $\sfunvalue$ and $\overline{\aexp}$ are the arguments, a $\mathtt{rep}$-expression $\repK(\aexp)\{ \aexp \}$ modelling time evolution, a $\mathtt{nbr}$-expression $\nbrK\{\aexp\}$ modelling neighbourhood interaction or a $\mathtt{share}$-expression $\shareK(\aexp)\{(\xname) \ftoSym \aexp \}$ modelling time evolution based on a neighbouring field. A non-aligned expression $\sexp$ can be a variable $\xname$, a non-aligned local value $\slvalue$ or a function application $\sexp(\overline{\sexp})$ where $\sexp$ evaluates to a function $\sfunvalue$ and $\overline{\sexp}$ are the arguments.
+An aggregate expression $\aexp$ can be a variable $\xname$, a value $\anyvalue$, a function application $\aexp(\overline{\aexp})$ where $\aexp$ evaluates to a function $\afunvalue$ or $\sfunvalue$ and $\overline{\aexp}$ are the arguments, a $\mathtt{rep}$-expression $\repK(\aexp)\{ \aexp \}$ modelling time evolution, a $\mathtt{nbr}$-expression $\nbrK\{\aexp\}$ modelling neighbourhood interaction or a $\mathtt{share}$-expression $\shareK(\aexp)\{(\xname) \ftoSym \aexp \}$ modelling time evolution based on a neighbouring field. A standard expression $\sexp$ can be a variable $\xname$, a standard local value $\slvalue$ or a function application $\sexp(\overline{\sexp})$ where $\sexp$ evaluates to a function $\sfunvalue$ and $\overline{\sexp}$ are the arguments.
 
-A value can be either an aligned local value $\alvalue$, a non-aligned local value $\slvalue$ or a neighbouring field value $\fvalue$. Neighbouring field values doesn't appear in the source code but can only be computed dynamically, usally by built-in operators like $\mathtt{nbr}$ or $\mathtt{share}$.
+A value can be either an aggregate local value $\alvalue$, a standard local value $\slvalue$ or a neighbouring field value $\fvalue$. Neighbouring field values doesn't appear in the source code but can only be computed dynamically, usally by built-in operators like $\mathtt{nbr}$ or $\mathtt{share}$.
 
-Aligned local values can be either a data value $\dcOf{\dc}{\overline\alvalue}$, in which $\dc$ is a data constructor and $\overline{\alvalue}$ are aligned local value arguments, or an aligned function value $\afunvalue$. Non-aligned local values can be either a data value $\dcOf{\dc}{\overline\slvalue}$, in which $\dc$ is a data constructor and $\overline{\slvalue}$ are non-aligned local value arguments, or a non-aligned function value $\sfunvalue$.
+Aggregate local values can be either a data value $\dcOf{\dc}{\overline\lvalue}$, in which $\dc$ is a data constructor and $\overline{\lvalue}$ are local value arguments, or an aggregate function value $\afunvalue$. Standard local values can be either a data value $\dcOf{\dc}{\overline\slvalue}$, in which $\dc$ is a data constructor and $\overline{\slvalue}$ are standard local value arguments, or a standard function value $\sfunvalue$.
 
-An aligned function value $\afunvalue$ can be an aligned built-in function $\abname$ (e.g. nbrsense, which returns a field of the distances from the neighbours, or maxhood, which returns the maximum value in the argument field), a declared aligned function $\afname$ or an anonymous aligned function value $ (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}}$, where $\overline{\xname}$ are variable names for the formal parameters, $\aexp$ is the body of the function and $\name$ is a \textit{tag} that uniquely identifies the function and doesn't occours in the source program. A non-aligned function value $\sfunvalue$ can be a non-aligned built-in function $\sbname$ (e.g. a temperature sensor or a pure mathematical or logical function), a declare non-aligned function $\sfname$ or an anonymous non-aligned function value $(\overline{\xname}) \; \ftoSym \{ \sexp \}$, where $\overline{\xname}$ are variable names for the formal parameters and $\sexp$ is the body of the function.
+An aggregate function value $\afunvalue$ can be an aggregate built-in function $\abname$ (e.g. nbrsense, which returns a field of the distances from the neighbours, or maxhood, which returns the maximum value in the argument field), a declared aggregate function $\afname$ or an anonymous aggregate function value $ (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}}$, where $\overline{\xname}$ are variable names for the formal parameters, $\aexp$ is the body of the function and $\name$ is a \textit{tag} that uniquely identifies the function and doesn't occours in the source program. A standard function value $\sfunvalue$ can be a standard built-in function $\sbname$ (e.g. a temperature sensor or a pure mathematical or logical function), a declare standard function $\sfname$ or an anonymous standard function value $(\overline{\xname}) \; \ftoSym \{ \sexp \}$, where $\overline{\xname}$ are variable names for the formal parameters and $\sexp$ is the body of the function.
+
+\subsection{\FKotac{} semantics}
 
 \begin{figure}[!t]{
  \scalebox{0.85}{
@@ -249,7 +258,7 @@ An aligned function value $\afunvalue$ can be an aligned built-in function $\abn
 \surfaceTyping{E-DA-APP}{ \quad
 \begin{array}{c}
   \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree} \qquad 
-  \funvalue=\vrootOf{\vtree} \mbox{is aligned and not a built-in} \qquad
+  \funvalue=\vrootOf{\vtree} \mbox{is aggregate and not a built-in} \qquad
 \\
   \bsopsem{\deviceId}{\piBof{\funvalue}{\Trees}}{\senstate}{\applySubstitution{\body{\funvalue}}{\substitution{\args{\funvalue}}{\vrootOf{\overline{\vtree}}}}}{\vtree'}
 \end{array}
@@ -324,9 +333,9 @@ An aligned function value $\afunvalue$ can be an aligned built-in function $\abn
  \caption{Big-step operational semantics of \FKotac{}.} \label{fig:kotacSemantics}
 \end{figure}
 
-Figure \ref{fig:kotacSemantics} shows the operational semantics of the syntax. It follows the same notation of the field calculus semantics and uses the same auxiliary functions. Rules \ruleNameSize{[E-LOC]} e \ruleNameSize{[E-FLD]} define the evaluation of local values (aligned or non-aligned) and neighbouring values, both producing a value-tree with no subtrees, with a domain restriction to the aligned devices in case of neighbouring fields. Rules \ruleNameSize{[E-BA-APP]} and \ruleNameSize{[E-DA-APP]} model the application of aligned built-in and aligned user defined (or anonymous) functions, the former based on a function different for each built-in and the latter by executing the body of the function. Rules \ruleNameSize{[E-BS-APP]} and \ruleNameSize{[E-DS-APP]} model the application of non-aligned built-in and non-aligned user defined (or anonymous) functions, those rules are not present in the field calculus semantics. In the former the root of the value-tree is computed by a function $\builtinop{\sbname}{\correction{\deviceId}}{\senstate}$ not dependent on the environement or sensor state and different for each built-in. In the latter the root is computed by executing the body of the function $\funvalue$ with an empty value-tree environment and discarding its computed sub-value-tree, except for the root which its the root of the new value-tree. Rule \ruleNameSize{[E-NBR]} models the evaluation of $\mathtt{nbr}$-expressions, by extracting from the value-tree environment the neighbouring values to build a neighbouring field, and computing the expressions $\e$ for the new value of the executing device. Rule \ruleNameSize{[E-REP]} models the evauation of $\mathtt{rep}$-expressions, by extracting from the value-tree environemtn the last computed value for the new evaluation of $\e$. Rule \ruleNameSize{[E-SHARE]} models the evaluation of $\mathtt{share}$-expressions, by constructing a field of the last computing values as the argument $\xname$ for the evaluation of $\e_2$ and using $\e_1$ as the initial value of the executing device.
+Figure \ref{fig:kotacSemantics} shows the operational semantics of the syntax. It follows the same notation of the field calculus semantics and uses the same auxiliary functions. Rules \ruleNameSize{[E-LOC]} e \ruleNameSize{[E-FLD]} define the evaluation of local values (aggregate or standard) and neighbouring values, both producing a value-tree with no subtrees, with a domain restriction to the aligned devices in case of neighbouring fields. Rules \ruleNameSize{[E-BA-APP]} and \ruleNameSize{[E-DA-APP]} model the application of aggregate built-in functions and aggregate user defined (or anonymous) functions, the former based on a function different for each built-in and the latter by executing the body of the function. Rules \ruleNameSize{[E-BS-APP]} and \ruleNameSize{[E-DS-APP]} model the application of standard built-in functions and standard user defined (or anonymous) functions, those rules are not present in the field calculus semantics. In the former the root of the value-tree is computed by a function $\builtinop{\sbname}{\correction{\deviceId}}{\senstate}$ not dependent on the environement or sensor state and different for each built-in. In the latter the root is computed by executing the body of the function $\funvalue$ with an empty value-tree environment and discarding its computed sub-value-tree, except for the root which its the root of the new value-tree. Rule \ruleNameSize{[E-NBR]} models the evaluation of $\mathtt{nbr}$-expressions, by extracting from the value-tree environment the neighbouring values to build a neighbouring field, and computing the expressions $\e$ for the new value of the executing device. Rule \ruleNameSize{[E-REP]} models the evauation of $\mathtt{rep}$-expressions, by extracting from the value-tree environemtn the last computed value for the new evaluation of $\e$. Rule \ruleNameSize{[E-SHARE]} models the evaluation of $\mathtt{share}$-expressions, by constructing a field of the last computing values as the argument $\xname$ for the evaluation of $\e_2$ and using $\e_1$ as the initial value of the executing device.
 
-It's important to note that a standard function $\sfname$ can be called for example with an aligned anonymous functions $\name$ as parameters according to the syntax and semantics. If the function $\name$ is then called inside the body of $\sfname$ it will not have the expected aligned behavior. In order to avoid this situation typing rules must enforce that only non-aligned local value can be passed as arguments of non-aligned functions (either declared or anonymous).
+It's important to note that a standard function $\sfname$ can be called for example with an aggregate anonymous functions $\name$ as parameters according to the syntax and semantics. If the function $\name$ is then called inside the body of $\sfname$ it will not have the expected aligned behavior. In order to avoid this situation typing rules must enforce that only standard local value can be passed as arguments of standard functions (either declared or anonymous).
 
 \begin{figure}[!t]{
  $\begin{array}{l}
@@ -389,3 +398,156 @@ It's important to note that a standard function $\sfname$ can be called for exam
 \end{figure}
 
 Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whole networks. It uses the same syntax of the field calculus network semantics and the same rules. Like for the field calculus rule \ruleNameSize{[N-FIR]} models a computational round on device $\deviceId$ and rule \ruleNameSize{[N-ENV]} models an environement change to a new well-formed environment.
+
+\subsection{\FKotac{} typing}
+
+\begin{figure}[!t]{
+ \scalebox{0.8}{
+ $\begin{array}{l}
+%%%  TYPES
+\textbf{Types:}\\
+\begin{array}{rcl@{\hspace{7.5cm}}r}
+\atype & \BNFcce & \atOf{\type}{\tann} &   {\footnotesize \mbox{annotated type}} \\
+%
+\type & \BNFcce &  \tvar  \; \BNFmid \;  \builtintype \; \BNFmid \;  (\overline\atype) \rightarrow \atype        &   {\footnotesize \mbox{type}} \\
+%
+\tann & \BNFcce &  \aann \; \BNFmid \;  \sann &   {\footnotesize \mbox{type annotation}} \\
+%
+\typescheme & \BNFcce &  \forall\overline{\tvar}.\atype      &   {\footnotesize \mbox{type scheme}} \\
+%
+%\localenv & \BNFcce & \envS{\senstate}{\overline\vtree} &   {\footnotesize \mbox{local environment}} \\
+\end{array}\\
+\hline\\[-8pt]
+%%%  TYPE RULES
+\textbf{Expression typing:} 
+  \hfill
+  \boxed{\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\atype}}
+\vspace{0.1cm}
+  \\
+\begin{array}{c}
+{
+\surfaceTyping{T-ANN}{ \quad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\atOf{\type}{\sann}}
+}{
+\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\atOf{\type}{\aann}} }
+}
+\qquad
+\skiptransition
+%
+\nullsurfaceTyping{T-VAR}{
+\expTypJud{\TStypEnv}{\TtypEnv,\xname:\atype}{\xname}{\atype}
+}
+\qquad
+%
+{
+\surfaceTyping{T-DAT TODOOOOOO}{ \quad
+\applySubstitution{\type'}{\substitution{\overline\tvar}{\overline\type''}} = (\overline{\type})\rightarrow\type
+\qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\overline{\anyvalue}}{\atOf{\overline{\type}}{\tann}}
+}{
+\expTypJud{\TStypEnv,\dc: \forall \overline{\tvar}. \atOf{\type'}{\tann}}{\TtypEnv}{\dc(\overline{\anyvalue})}{\atOf{\type}{\tann}} }
+}
+%
+\skiptransition
+%
+\surfaceTyping{T-A-AFUN}{ \quad
+\expTypJud{\TStypEnv}{\;\TtypEnv,\,\overline{\xname}:\overline{\atype}}{\e}{\atype}
+}{ \expTypJud{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}}{\atOf{(\overline{\atype})\rightarrow\atype}}{\aann}}
+%
+\skiptransition
+%
+\surfaceTyping{T-A-SFUN}{ \quad
+\expTypJud{\TStypEnv}{\;\TtypEnv,\,\overline{\xname}:\atOf{\overline{\type}}{\sann}}{\e}{\atOf{\type}{\sann}}
+}{ \expTypJud{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \; \ftoSym \{\e\}}{\atOf{(\atOf{\overline{\type}}{\sann})\rightarrow\atOf{\type}{\sann}}}{\sann}}
+%
+\skiptransition
+%
+{
+\surfaceTyping{T-N-FUN}{ \quad
+\mbox{$\funvalue$ is a (built-in or declared, aggregate or standard) function}}{
+\expTypJud{\TStypEnv,\funvalue: \forall \overline{\tvar}. \atOf{\type}{\tann}}{\TtypEnv}{\funvalue}{\atOf{\applySubstitution{\type}{\substitution{\overline\tvar}{\overline\type}}}}{\tann} }
+}
+%
+\skiptransition
+%
+%
+\surfaceTyping{T-APP}{ \quad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\atOf{(\overline{\atype})\rightarrow\atype}{\tann}} \qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\overline{\e}}{\overline{\atype}} }{
+\expTypJud{\TStypEnv}{\TtypEnv}{\e(\overline{\e})}{\atype} }
+%
+\skiptransition
+%
+%\surfaceTyping{T-BRANCH}{ \qquad
+%\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\btype}
+%\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{\type}
+%\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_3}{\type} }{
+%\expTypJud{\TStypEnv}{\TtypEnv}{\ifK(\e_1) \{\e_2\} \{\e_3\} }{\type} }
+%%
+%\skiptransition
+%%
+\surfaceTyping{T-REP}{ \qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\type}
+\qquad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{(\type)\to \type} }{
+\expTypJud{\TStypEnv}{\TtypEnv}{\repK(\e_1)\{\e_2\}}{\type} }
+%
+\qquad\qquad
+%
+\surfaceTyping{T-NBR}{ \qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\type}
+}{ \expTypJud{\TStypEnv}{\TtypEnv}{\nbrK\{\e\}}{\type} }
+%
+\skiptransition
+%
+\surfaceTyping{T-FOLD}{ \qquad
+\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\type}
+\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{(\type, \type) \to \type}
+\quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_3}{\type} }{
+\expTypJud{\TStypEnv}{\TtypEnv}{\foldK(\e_1) (\e_2) \{\e_3\} }{\type} }
+%
+\skiptransition
+%
+\end{array}
+\\
+\textbf{Function typing:} 
+  \hfill
+  \boxed{\funTypJud{\TStypEnv}{\FUNCTION}{\typescheme}}
+  \\
+\begin{array}{c}
+%
+\surfaceTyping{T-FUNCTION}{
+\qquad
+\expTypJud{\TStypEnv,\,\fname:\forall\emptyseq.(\overline{\type})\rightarrow\type}{\overline{\xname}:\overline{\type}}{\e}{\type}
+\qquad
+\overline{\tvar}=\FTV{(\overline{\type})\rightarrow\type}
+}{ \funTypJud{\TStypEnv}{\defK \; \fname (\overline{\xname}) \; \eqSymK{\e}}{\forall\overline{\tvar}.(\overline{\type})\rightarrow\type}}
+%
+\skiptransition
+%
+\end{array}
+\\
+\textbf{Program typing:} 
+  \hfill
+  \boxed{\proTypJud{\PROGRAM}{\type}}
+  \\
+\begin{array}{c}
+%
+\surfaceTyping{T-PROGRAM}{
+\\
+\TStypEnv_0=\OStypEnv
+\\
+\FUNCTION_i = \defK \; \fname_i (\_) \; \eqSymK{\_}
+\qquad
+\funTypJud{\TStypEnv_{i-1}}{\FUNCTION_i}{\typescheme_i}
+\qquad
+\TStypEnv_i=\TStypEnv_{i-1},\, \fname_i:\typescheme_i
+\qquad
+ (i \in 1..n)
+\\
+\expTypJud{\TStypEnv_n}{\emptyset}{\e}{\type}
+}{ \proTypJud{\FUNCTION_1\cdots\FUNCTION_n  \;
+\e}{\type}}
+\end{array}
+\end{array}$}
+} \caption{Type rules for \FKotac{} expressions, function declarations, and programs.} \label{fig:fkotacTyping}
+\end{figure}
