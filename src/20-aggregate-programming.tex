@@ -75,6 +75,125 @@ Local values can be either \textit{data value} $\dcOf{\dc}{\overline\lvalue}$, i
 
 A \textit{function value} $\funvalue$ can be a built-in function $\bname$, a declared function $\fname$ or an anonymous function value $(\overline{\xname}) \toSym{\name} \e$  where $\overline{\xname}$ are variable names for the formal parameter, $\e$ is the body of the function and $\name$ is a \texttt{tag} identifying the function. $\name$ doesn't appear in the source code but is uniquely determined by the function syntactical representation.
 
+\section{Field Calculus Typing}
+
+\begin{figure}[t!]
+\scalebox{0.85}{$\begin{array}{l}
+	\textbf{Monomorphic types:} \\
+	\begin{array}{rcl@{\hspace{8.8cm}}r}
+		\type & \BNFcce &  \ltype \; \BNFmid \;  \ftype        &   {\footnotesize \mbox{type}} \\
+		\ltype & \BNFcce &  \builtintype  \; \BNFmid \;  (\overline{\type}) \rightarrow \type    &   {\footnotesize \mbox{local type}} \\
+		\ftype & \BNFcce &  \ftypeOf{\ltype}    &   {\footnotesize \mbox{field type}} \\
+	\end{array}\\
+	\hline\\[-8pt]
+	\textbf{Expression monomorphic typing:} \hspace{6.0cm} \boxed{\expTypJud{\OtypEnv}{\MtypEnv}{\e}{\type}} \\[5pt]
+	\quad
+	\begin{array}{c}
+		\nullsurfaceTyping{M-VAR}{
+			\expTypJud{\OtypEnv}{\MtypEnv, \xname:\type}{\xname}{\type}
+		}
+		\qquad
+		\surfaceTyping{M-DAT}{ \qquad
+	        (\overline{\ltype}) \rightarrow \ltype\in \OtypEnv_0(\dc) \qquad
+			\expTypJud{\OtypEnv_0}{\emptyset}{\overline{\lvalue}}{\overline{\ltype}}
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{\dcOf{\dc}{\overline{\lvalue}}}{\ltype}
+		}
+		\skiptransition
+		\correction{\surfaceTyping{M-FLD}{ \quad
+			\fvalue = \envmap{\overline\deviceId}{\overline\lvalue} \quad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\overline\lvalue}{\ltype}
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{\fvalue}{\ftypeOf{\ltype}}
+		}}
+		\qquad
+		\surfaceTyping{M-N-FUN}{  \qquad
+			 (\overline{\type}) \rightarrow \type \in \OtypEnv(\ofname)
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{\ofname}{(\overline{\type}) \rightarrow \type}
+		}
+		\skiptransition
+		\surfaceTyping{M-A-FUN}{  \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv, \overline{\xname} : \overline\type}{\e}{\type}
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{(\overline{\xname}) \toSym{\correction{\name}} \e}{(\overline\type) \rightarrow \type}
+		}
+		\qquad
+		\surfaceTyping{M-APP}{ \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\e}{(\overline{\type})\rightarrow\type} \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\overline{\e}}{\overline{\type}}
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{\e(\overline{\e})}{\type}
+		}
+		\skiptransition
+		\surfaceTyping{M-REP}{ \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\e_1}{\type} \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv,\xname:\type}{\e_2}{\type}
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{\repK(\e_1)\{(\xname) \ftoSym \e_2\}}{\type}
+		}
+		\qquad
+		\surfaceTyping{M-NBR}{ \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\e}{\ltype}
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{\nbrK\{\e\}}{\ftypeOf{\ltype}}
+		}
+		\skiptransition
+		\surfaceTyping{M-IF}{ \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\e_0}{\mathtt{bool}} \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\e_1}{\type} \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\e_2}{\type}
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{\fifK (\e_0) \{\e_1\} \elseK \{\e_2\}}{\type}
+		}
+		\skiptransition
+		\surfaceTyping{M-SHARE}{ \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv}{\e_1}{\ltype} \qquad
+			\expTypJud{\OtypEnv}{\MtypEnv,\xname:\ftypeOf{\ltype}}{\e_2}{\ltype} \qquad
+		}{
+			\expTypJud{\OtypEnv}{\MtypEnv}{ \shareK(\e_1)\{(\xname) \ftoSym \e_2 \}}{\ltype}
+		}
+	\end{array} \\
+	\hline\\[-8pt]
+	\textbf{Function monomorphic typing:}\\[5pt]
+	\quad
+	\begin{array}{c}
+		\surfaceTyping{M-FUNCTION}{ \\
+	\expTypJud{\OtypEnv,\,\fname:\{\overline{\type}^{(1)}\rightarrow\type^{(1)}\}}{\overline{\xname}:\overline{\type}^{(1)}}{\e}{\type^{(1)}}
+	~~\cdots~~
+	\expTypJud{\OtypEnv,\,\fname:\{\overline{\type}^{(m)}\rightarrow\type^{(m)}\}}{\overline{\xname}:\overline{\type}^{(m)}}{\e}{\type^{(m)}}
+	\quad m \ge 1
+}{
+	\funTypJud{\OtypEnv}{\defK \; \fname (\overline{\xname}) \; \{\e\}}{
+		\{\overline{\type}^{(1)}\rightarrow\type^{(1)}, \ldots, \overline{\type}^{(m)}\rightarrow\type^{(m)}\}
+	}} 
+	\end{array}\\
+	\hline\\[-8pt]
+	\textbf{Program monomorphic typing:}\\[5pt]
+	\quad
+	\begin{array}{c}
+		\surfaceTyping{M-PROGRAM}{ \\
+	\FUNCTION_i=(\defK \; \fname_i (\_) \; \_) \qquad
+	\funTypJud{\OtypEnv_{i-1}}{\FUNCTION_i}{\ltypeset_i} \qquad
+	\OtypEnv_i=\OtypEnv_{i-1},\, \fname_i:\ltypeset_i \qquad
+	(i \in 1..n) \\
+	\expTypJud{\OtypEnv_n}{\emptyset}{\e}{\type}
+}{
+	\funTypJud{\OtypEnv_0}{\FUNCTION_1\cdots\FUNCTION_n  \; \e}{\type}
+}
+	\end{array}
+\end{array}$}
+	\caption{Monomorphic typing for \HFC\ from \cite{FieldCalculus}.}
+	\label{fig:hfctyping}
+\end{figure}
+
+Figure \ref{fig:hfctyping} shows the typing rules for the field calculus from \cite{FieldCalculus}. A type $\type$ can be either a local type or a field type. Local types $\ltype$ are either built-in types $\builtintype$ (e.g. numbers, booleans, lists) or function types $ (\overline{\type}) \rightarrow \type $. A field type $\ftype$ is a type in the form $\ftypeOf{\ltype}$ where $\ltype$ is the type of the values in the field. The typing judgement rules are given in the form $\expTypJud{\OtypEnv}{\MtypEnv}{\e}{\type}$, meaning that $\e$ has type $\type$ under the type-set assumptions $\OtypEnv$ and the type assumptions $\MtypEnv$. $\MtypEnv$ is a type environment collecting type assumptions for program variables in the form $\xname:\type$. $\OtypEnv$ is a local-type-set environment associating function types to each data constructor, built-in function and user defined function. $\OtypEnv_0$ denotes the distinguished built-in local-type-set environement for built-in functions and data constructors.
+
+Rule \ruleNameSize{[M-VAR]} types a variable $\xname$ by looking the type assumptions in $\MtypEnv$. Rule \ruleNameSize{[M-DAT]} express how to type a data value $\dcOf{\dc}{\overline{\lvalue}}$, extracting its data constructor type from $\OtypEnv_0$. Rule \ruleNameSize{[M-FLD]} assigns type $\ftypeOf{\ltype}$ to a field $\fvalue$ if each $\lvalue$ in the field has type $\ltype$. Rule \ruleNameSize{[M-N-FUN]} assigns a type from $\OtypEnv$ to built-in or user defined functions $\ofname$. Rule \ruleNameSize{[M-A-FUN]} assigns a type to an anonumous function by typing the body given the types of the arguments. Rule \ruleNameSize{[M-APP]} assigns a type to a function application by assigning a type to the function expression and the arguments. Rule \ruleNameSize{[M-REP]} assings a type to a $\mathtt{rep}$-expressing, ensuring that the initial value and the body have the same type. Rule \ruleNameSize{[M-NBR]} assings a type to a $\mathtt{nbr}$-expression as a field of the type of the expression $\e$, while ensuring that it has a local type in order to avoid fields of fields. Rule \ruleNameSize{[M-SHARE]} assigns a type to a $\mathtt{share}$-expression, ensuring that the initial value and the body have the same type. Rule \ruleNameSize{[M-IF]} assings a type to an $\mathtt{if}$-expression, verifying that both branches has the same type and that the condition evaluates to a boolean. This rule is actually not necessary since every $\mathtt{if}$ expression can be rewritten by using the built-in operator $\mathtt{mux}(\e,\e_1,\e_2)$ which eagerly evaluates both $\e_1$ and $\e_2$ and returns the result of one of them according to the truth value computed by $\e$. Every $\fifK(\e)\{\e_1\}\{\e_2\}$ can be rewritten then as $\mathtt{mux}(\e,()\ftoSym\e_1,()\ftoSym\e_2)()$.
+
+Rule \ruleNameSize{[M-FUNCTION]} allows assignment of a user-defined function to a non-empty set of types. Rule \ruleNameSize{[M-PROGRAM]} allows to type a program with the type of the main expression by adding to the local-type-set environment all the types of the user defined functions.
+
+
 \section{Field Calculus Semantic}
 
 \begin{figure}[!t]{
@@ -270,7 +389,7 @@ Rule \ruleNameSize{[E-NBR]} models the evaluation of $\mathtt{nbr}$-expression, 
 
 Rule \ruleNameSize{[E-REP]} models the evaluation of $\mathtt{rep}$-expression, which extract from the value-tree environment the root of the last computed tree in order to replace $\xname$ in the new evaluation of $\e_2$.
 
-Rule \ruleNameSize{[E-IF]} models a branching expression by computing and aligning on only one subtree according to the evaluation of $\e$. This rule is actually not necessary since every $\mathtt{if}$ expression can be rewritten by using the built-in operator $\mathtt{mux}(\e,\e_1,\e_2)$ which eagerly evaluates both $\e_1$ and $\e_2$ and returns the result of one of them according to the truth value computed by $\e$. Every $\fifK(\e)\{\e_1\}\{\e_2\}$ can be rewritten then as $\mathtt{mux}(\e,()\ftoSym\e_1,()\ftoSym\e_2)()$.
+Rule \ruleNameSize{[E-IF]} models a branching expression by computing and aligning on only one subtree according to the evaluation of $\e$. As already stated in the typing rules, this rule is actually not necessary.
 
 Rule \ruleNameSize{[E-SHARE]} models a $\mathtt{share}$-expression, which collects the neighbouring values of the last computations of the expression to form the field $\fvalue$. In case there is not a value for the device $\deviceId$ the root of the evaluation of $\e_1$ is used. Then $\fvalue$ is substituted to $\xname$ in the evaluation of $\e_2$.
 
