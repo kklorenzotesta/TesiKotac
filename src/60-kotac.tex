@@ -132,7 +132,7 @@ An aggregate function value $\afunvalue$ can be an aggregate built-in function $
 
 \subsection{\FKotac{} semantics}
 
-\begin{figure}[!t]{
+\begin{figure}[p]{
  \scalebox{0.85}{
  $\begin{array}{l}
  \textbf{Value-trees and value-tree environments:}\\
@@ -154,11 +154,8 @@ An aggregate function value $\afunvalue$ can be an aggregate built-in function $
 \piIof{i}{\mkvt{\anyvalue}{\vtree_1,\ldots,\vtree_n}}  =   \vtree_i
 \quad \mbox{if} \; 1\le i \le n
 \\
-\piBof{\funvalue}{\mkvt{\anyvalue}{\vtree_1,\ldots,\vtree_{n+1}}}  =   \vtree_{n+1}
-\quad \mbox{if} \; \funvalue \; \mbox{is a built-in function and} \; \vrootOf{\vtree_{n+1}} = \funvalue
-\\
-\piBof{\funvalue}{\mkvt{\anyvalue}{\vtree_1,\ldots,\vtree_{n+2}}}  =   \vtree_{n+2}
-\quad \mbox{if} \; \funvalue \; \mbox{is a non-built-in function and} \; \nameOf(\vrootOf{\vtree_{n+1}}) = \nameOf(\funvalue)
+\piBof{\funvalue}{\mkvt{\anyvalue}{\vtree_0,\ldots,\vtree_{n+1}}}  =   \vtree_{n+1}
+\quad \mbox{if} \; \nameOf(\vrootOf{\vtree_{0}}) = \nameOf(\funvalue)
 \\
  \piBof{\funvalue}{\vtree}  =   \emptyseq \quad \mbox{otherwise}
 \\  
@@ -175,7 +172,7 @@ An aggregate function value $\afunvalue$ can be an aggregate built-in function $
 \end{array}\right.   
 \\
 \begin{array}{ll}
-\nameOf(\fname) = \fname 
+\nameOf(\fname) = \fname \qquad \nameOf(\bname) = \bname
 &
 \nameOf((\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}) = \name
 \\
@@ -233,8 +230,10 @@ An aggregate function value $\afunvalue$ can be an aggregate built-in function $
 \skiptransition%[-5pt]
 \begin{array}{c}
 %\vspace{-0.1cm}
-\nullsurfaceTyping{E-LOC}{
-\bsopsem{\deviceId}{\Trees}{\senstate}{\lvalue}{\mkvt{\lvalue}{}}
+\surfaceTyping{E-LOC}{
+	\e = \lvalue \text{ or } \funvalue
+}{
+	\bsopsem{\deviceId}{\Trees}{\senstate}{\e}{\mkvt{\e}{}}
 }
 \qquad\qquad
 \surfaceTyping{E-FLD}{\qquad \fvalue' = \proj{\fvalue}{\domof{\Trees}\cup\{\deviceId\}}}{
@@ -245,10 +244,10 @@ An aggregate function value $\afunvalue$ can be an aggregate built-in function $
 \begin{array}{c}
   \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree}
   \qquad \abname = \vrootOf{\vtree}
-  \qquad \anyvalue=\builtinop{\abname}{\correction{\deviceId}}{\piBof{\abname}{\Trees},\senstate}(\vrootOf{\overline{\vtree}})
+  \qquad \vtree'=\builtinop{\abname}{\correction{\deviceId}}{\piBof{\abname}{\Trees},\senstate}(\vrootOf{\overline{\vtree}})
 \end{array}
  }{
-\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\anyvalue}{\overline{\vtree},\vtree}}
+\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\vrootOf{\vtree'}}{\vtree,\overline{\vtree},\vtree'}}
 }
 %
 \skiptransition\\[-6pt]
@@ -256,22 +255,22 @@ An aggregate function value $\afunvalue$ can be an aggregate built-in function $
 \surfaceTyping{E-DA-APP}{ \quad
 \begin{array}{c}
   \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree} \qquad 
-  \funvalue=\vrootOf{\vtree} \mbox{is aggregate and not a built-in} \qquad
+  \afunvalue=\vrootOf{\vtree} \mbox{ not a built-in} \qquad
 \\
-  \bsopsem{\deviceId}{\piBof{\funvalue}{\Trees}}{\senstate}{\applySubstitution{\body{\funvalue}}{\substitution{\args{\funvalue}}{\vrootOf{\overline{\vtree}}}}}{\vtree'}
+  \bsopsem{\deviceId}{\piBof{\afunvalue}{\Trees}}{\senstate}{\applySubstitution{\body{\afunvalue}}{\substitution{\args{\afunvalue}}{\vrootOf{\overline{\vtree}}}}}{\vtree'}
 \end{array}
- }{
-\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\vrootOf{\vtree'}}{\overline{\vtree},\vtree,\vtree'}}
+}{
+\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\vrootOf{\vtree'}}{\vtree,\overline{\vtree},\vtree'}}
 }
 \skiptransition\\[-6pt]
 \surfaceTyping{E-BS-APP}{  \quad
 \begin{array}{c}
   \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree}
   \qquad \sbname = \vrootOf{\vtree}
-  \qquad \anyvalue=\builtinop{\sbname}{\correction{\deviceId}}{\senstate}(\vrootOf{\overline{\vtree}})
+  \qquad \mkvt{\sanyvalue}{} = \builtinop{\sbname}{\correction{\deviceId}}{\emptyseq,\senstate}(\vrootOf{\overline{\vtree}})
 \end{array}
  }{
-\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\anyvalue}{\overline{\vtree},\vtree}}
+\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\anyvalue}{\vtree,\overline{\vtree}, \mkvt{\sanyvalue}{}}}
 }
 %
 \skiptransition\\[-6pt]
@@ -279,12 +278,12 @@ An aggregate function value $\afunvalue$ can be an aggregate built-in function $
 \surfaceTyping{E-DS-APP}{ \quad
 \begin{array}{c}
   \bsopsem{\deviceId}{\piIofOv{\Trees}}{\senstate}{\overline{\e},\e}{\overline{\vtree},\vtree} \qquad 
-  \funvalue=\vrootOf{\vtree} \mbox{is standard and not a built-in} \qquad
+  \sfunvalue=\vrootOf{\vtree} \mbox{ not a built-in} \qquad
 \\
-  \bsopsem{\deviceId}{\emptyseq}{\senstate}{\applySubstitution{\body{\funvalue}}{\substitution{\args{\funvalue}}{\vrootOf{\overline{\vtree}}}}}{\vtree'}
+  \bsopsem{\deviceId}{\emptyseq}{\senstate}{\applySubstitution{\body{\sfunvalue}}{\substitution{\args{\sfunvalue}}{\vrootOf{\overline{\vtree}}}}}{ \mkvt{\sanyvalue}{} }
 \end{array}
  }{
-\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\vrootOf{\vtree'}}{\overline{\vtree},\vtree}}
+\bsopsem{\deviceId}{\Trees}{\senstate}{\e(\overline{\e})}{\mkvt{\sanyvalue}{\vtree,\overline{\vtree}, \mkvt{\sanyvalue}{}}}
 }
 %
 \skiptransition\\[-5pt]
