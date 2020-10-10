@@ -1,6 +1,6 @@
 \section{\FSCAFI{} semantic}
 
-Since \Scafi{} is based on the notion of computations against a neighbour instead of neighbouring values it has different semantics from the higher order field calculus (\HFC) and its implementation Protelis. In order to formalize the semantic of \Scafi{} a subset of it has been considered called \textit{Featherweight \Scafi{} (\FSCAFI)} \cite{Scafi} and only the semantic of \FSCAFI has been considered. It has been proved that both \FSCAFI and \HFC{} can express programs that the other can't, but they have a non-empty intersection that can express all the self-stabilising build blocks.
+Since \Scafi{} is based on the notion of computations against a neighbour instead of neighbouring values, it has different semantics from the higher order field calculus (\HFC) and its implementation Protelis. In order to formalize the semantic of \Scafi{} a subset of it has been considered called \textit{Featherweight \Scafi{} (\FSCAFI)} \cite{Scafi} and only the semantic of \FSCAFI has been considered. It has been proved that both \FSCAFI and \HFC{} can express programs that the other can't, but they have a non-empty intersection that can express all the self-stabilising build blocks.
 
 \begin{figure}[t]
 \centering
@@ -10,8 +10,9 @@ Since \Scafi{} is based on the notion of computations against a neighbour instea
                                                                                                                                                                                                         &   {\footnotesize \mbox{program}} \\[3pt]
         \FUNCTION & \BNFcce &  \defK \; \fname (\overline{\xname}) \; \eqSymK{\e}
                                                                                                                                                                                                         &   {\footnotesize \mbox{function declaration}} \\[3pt]
-        \e & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \e(\overline{\e}) \, \BNFmid \, \repK(\e)\{ \e \} \, \BNFmid \, \nbrK\{\e\} \, \BNFmid \, \foldK(\e)(\e)\{\e\} \,
+        \e & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \,  (\overline{\xname}) \, \toSymKtag{\name}{\e} \, \BNFmid \, \e(\overline{\e}) \, \BNFmid \, \repK(\e)\{ \e \} \, \BNFmid \, \nbrK\{\e\} \, \BNFmid \, 
                                                                                                                                                                                                         &   {\footnotesize \mbox{expression}} \\[3pt]
+	&& \foldK(\e)(\e)\{\e\} \\[3pt]
         \hline \\[-6pt]
         \anyvalue & \BNFcce &  {\dc(\overline{\anyvalue})} \; \BNFmid \; \funvalue
                                                                                                                                                                                                         &   {\footnotesize\mbox{value}} \\
@@ -24,11 +25,12 @@ $
 \label{fig:fscafisyntax}
 \end{figure}
 
-The syntax of \FSCAFI is shown in figure \ref{fig:fscafisyntax}, it focus on the aggregate constructs ignoring the Scala specific features. A program $\PROGRAM$ is defined as a sequence of function declarations $\overline{\FUNCTION}$ followed by a main expression $\e$. A function declaration $\FUNCTION$ defines a (possibly recursive) function named $\fname$, with a sequence of formal parameters $\overline{\xname}$ and a body expression $\e$. An expression can be a variable $\xname$, a value $\anyvalue$, a function call $\e(\overline{\e})$ where $\e$ evaluates to a function $\funvalue$ and $\overline{\e}$ are the arguments, a $\mathtt{rep}$-expression $\repK(\e)\{ \e \}$ modelling time evolution, a $\mathtt{nbr}$-expression $\nbrK\{\e\}$ modelling neighbourhood interaction or a $\mathtt{foldhood}$-expression $\foldK(\e)(\e)\{\e\}$ combaining a computation against neighbours.
+The syntax of \FSCAFI is shown in figure \ref{fig:fscafisyntax}, it focus on the aggregate constructs ignoring the Scala specific features. A program $\PROGRAM$ is defined as a sequence of function declarations $\overline{\FUNCTION}$ followed by a main expression $\e$. A function declaration $\FUNCTION$ defines a (possibly recursive) function named $\fname$, with a sequence of formal parameters $\overline{\xname}$ and a body expression $\e$. An expression can be a variable $\xname$, a value $\anyvalue$, an anonymous function $(\overline{\xname}) \; \toSymKtag{\name}{\e}$ where $\overline{\xname}$ are the formal parameters, $\e$ the body of the function and $\name$ a \textit{tag} that uniquely identifies the function and doesn't occours in the source program, a function call $\e(\overline{\e})$ where $\e$ evaluates to a function $\funvalue$ and $\overline{\e}$ are the arguments, a $\mathtt{rep}$-expression $\repK(\e)\{ \e \}$ modelling time evolution, a $\mathtt{nbr}$-expression $\nbrK\{\e\}$ modelling neighbourhood interaction or a $\mathtt{foldhood}$-expression $\foldK(\e)(\e)\{\e\}$ combining a computation against neighbours.
 
-A value can be either a \textit{data value} $\dc(\overline{\anyvalue})$ consisting of a \textit{data constructor} $\dc$ applied to a sequence of values $\overline{\anyvalue}$, or a \textit{function value} $\funvalue$. A function value can be the name of a built-in function $\bname$, the name of a user defined function $\fname$, or an anonymous function $(\overline{\xname}) \; \toSymKtag{\name}{\e}$ where $\overline{\xname}$ are the formal parameters, $\e$ the body of the function and $\name$ a \textit{tag} that uniquely identifies the function and doesn't occours in the source program. A built-in function can be a \textit{pure operator} like the $\mathtt{mux}$ function or mathematical operators, a \textit{sensor} which depends on the environmental conditions of the computing device, or a \textit{relational sensor} which is a sensor depending additionally on a neighbouring device which the computation is happening against.
+A value can be either a \textit{data value} $\dc(\overline{\anyvalue})$ consisting of a \textit{data constructor} $\dc$ applied to a sequence of values $\overline{\anyvalue}$, or a \textit{function value} $\funvalue$. A function value can be the name of a built-in function $\bname$, the name of a user defined function $\fname$, or a closed anonymous function $(\overline{\xname}) \; \toSymKtag{\name}{\e}$. A built-in function can be a \textit{pure operator} like the $\mathtt{mux}$ function or mathematical operators, a \textit{sensor} which depends on the environmental conditions of the computing device, or a \textit{relational sensor} which is a sensor depending additionally on a neighbouring device which the computation is happening against.
 
 \begin{figure}[!t]{
+ \scalebox{0.85}{
  $\begin{array}{l}
 \textbf{Value-trees  
 and value-tree environments:}\\
@@ -218,12 +220,14 @@ and value-tree environments:}\\
 }
 \end{array}
 \end{array}$
+}
 } 
 \vspace{-0.1cm}
  \caption{Big-step operational semantics for expression evaluation from \cite{Scafi}.} \label{fig:fscafisemantics}
 \end{figure}
 
 \begin{figure}[!t]{
+ \scalebox{0.85}{
  $\begin{array}{l}
 \textbf{Auxiliary rules for expression evaluation failure:} \hfill
    %\qquad\qquad\qquad\quad\;\;
@@ -301,17 +305,18 @@ and value-tree environments:}\\
 }
 \end{array}
 \end{array}$
+}
 } 
 \vspace{-0.1cm}
 \caption{Big-step operational semantics for expression evaluation from \cite{Scafi} (auxiliary rules for expression evaluation failure).} \label{fig:fscafisemanticsFAIL}
 \end{figure}
 
 
-The semantics of \FSCAFI is shown in figure \ref{fig:fscafisemantics}. Like the field calculus sematic it follows the same notation and the result of the execution is a value-tree. It also uses the same ausiliary functions. Unlike the field calculus semantics the expression are evaluated against an additional deviced id $\deviceId'$ which is used by the $\mathtt{foldhood}$-expressions to evaluate against a neighbour.
+The semantics of \FSCAFI is shown in figure \ref{fig:fscafisemantics}. Like the field calculus sematic it follows the same notation and the result of the execution is a value-tree. It also uses the same auxiliary functions. Unlike the field calculus semantics the expression are evaluated against an additional deviced id $\deviceId'$ which is used by the $\mathtt{foldhood}$-expressions to evaluate against a neighbour.
 
 Rule \ruleNameSize{[E-VAL]} defines the evaluation of a value which produce a simple value-tree with only that value.
 
-Rules \ruleNameSize{[E-B-APP]} and \ruleNameSize{[E-D-APP]} model the application of built-in and user-defined (or anonymous) functions. Like for the field calculus semantic the built-ins evaluation is delegated a specific ausiliary functions different for each built-in that may depend on the neighbour device against which the computation is currently happening. In case of user-defined functions the domain of aligned neighbours is restricted to only the ones that executed the same function thanks to the operator $\piBof{\funvalue}{\Trees}$.
+Rules \ruleNameSize{[E-B-APP]} and \ruleNameSize{[E-D-APP]} model the application of built-in and user-defined (or anonymous) functions. Like for the field calculus semantic the built-ins evaluation is delegated a specific auxiliary functions different for each built-in that may depend on the neighbour device against which the computation is currently happening. In case of user-defined functions the domain of aligned neighbours is restricted to only the ones that executed the same function thanks to the operator $\piBof{\funvalue}{\Trees}$.
 
 Rule \ruleNameSize{[E-REP]}  models the evaluation of $\mathtt{rep}$-expressions just like the field calculus semantic.
 
@@ -320,6 +325,7 @@ Rules \ruleNameSize{[E-NBR]} and \ruleNameSize{[E-NBR-LOC]} both models the eval
 Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expressions. The expression $\e_3$ is computed against the executing device and against each network and the computed values are combined with the $\e_2$ function with an empty value-tree environment. For the evaluation of $\mathtt{foldhood}$ an additional set of rules, in figure \ref{fig:fscafisemanticsFAIL}, are required to handle the failures deriving by not aligned devices. The derive judgements for the failure cases are in the form $\bsopsemFAIL{\deviceId,\deviceId'}{\Trees}{\senstate}{\e}$ which means that expression $\e$ evaluation fails on the device $\deviceId$ against neightbour $\deviceId'$ with respect to the value-tree environment $\Trees$ and sensor state $\senstate$. The rule \ruleNameSize{[E-NBR-FAIL]} models the evaluation of an $\mathtt{nbr}$-expression against a non-aligned device, which results in a failure. Rule \ruleNameSize{[E-R-APP-FAIL]} models the failure on the evaluation of a built-in operators which is a relational sensor computing against a non-aligned device. Finally rules \ruleNameSize{[E-APP-ARG-FAIL]} and \ruleNameSize{[E-D-APP-FAIL]} model the propagation of failures when evaluating function application, the former handles failures in the evaluation of the arguments, the latter handles failure in the evaluation of the function.
 
 \begin{figure}[!t]{
+ \scalebox{0.9}{
  $\begin{array}{l}
  
  \textbf{Network configurations and action labels:}\\
@@ -368,6 +374,7 @@ Rule \ruleNameSize{[E-FOLD]} models the evaluation of $\mathtt{foldhood}$-expres
 %
 %
 \end{array}$
+}
 } 
  \caption{Small-step operational semantics for network evolution from \cite{Scafi}.} \label{fig:fscafinetworkSemantics}
 \end{figure}

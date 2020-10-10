@@ -2,7 +2,7 @@ Kotlin \cite{Kotlin} is a general-purpose programming language fully interoperab
 
 \section{Class and function definition}
 
-Kotlin is desined to have a syntax familiar to Java developer, like Java it supports the Object-Oriented Programming paradigm. The code is structured in nested packages, each one containing classes and top level functions. Each class :
+Kotlin is designed to have a syntax familiar to Java developer, like Java it supports the Object-Oriented Programming paradigm. The code is structured in nested packages, each one containing classes and top level functions. Each class :
 \begin{itemize}
 \item may extend one other class and any number of interfaces
 \item may have any number of field, holding values of specified types
@@ -17,9 +17,9 @@ class Foo<T>(t: T): Serializable {
   var v: T = t
 }
 \end{lstlisting}
-It defines a class named $\mathtt{Foo}$ with a type parameter $\mathtt{T}$ and implementing the Java interface $\mathtt{Serializable}$. The primary constructor takes a single argument $\mathtt{t}$ of type $\mathtt{T}$. A mutable field called $\mathtt{v}$ is declared of type $\mathtt{T}$ and inizialized with the value of $\mathtt{t}$.
+It defines a class named $\mathtt{Foo}$ with a type parameter $\mathtt{T}$ and implementing the Java interface $\mathtt{Serializable}$. The primary constructor takes a single argument $\mathtt{t}$ of type $\mathtt{T}$. A mutable field called $\mathtt{v}$ is declared of type $\mathtt{T}$ and initialized with the value of $\mathtt{t}$.
 
-In Kotlin functions are first class values and function types are directly expressable in the type system. Functions can be defined as class members or as top-level functions. They can have any number of parameters and type parameters, parameters may have default values. Functions can also be passed as parameters or returned by other functions. Functions can have default arguments, which are parameters with default values. The following example shows the definition of a function:
+In Kotlin functions are first class values and function types are directly expressable in the type system. Functions can be defined as class members or as top-level functions. They can have any number of parameters and type parameters. Functions can also be passed as parameters or returned by other functions. Functions can have default arguments, which are parameters with default values. The following example shows the definition of a function:
 \begin{lstlisting}[language={kotac}]
 fun foo<T>(t: T, i: Int = 0): String { /* ... */ }
 \end{lstlisting}

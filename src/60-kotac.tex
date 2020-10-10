@@ -58,7 +58,7 @@ interface ValueTree {
     fun put(trace: Trace, value: Any?)
 }
 \end{lstlisting}
-The inferface describes a basic mutable $\mathtt{Map}$ from $\mathtt{Trace}$s to values of any type. Since values are absent in non aligned devices the returned values are nullable.
+The interface describes a basic mutable $\mathtt{Map}$ from $\mathtt{Trace}$s to values of any type. Since values are absent in non aligned devices the returned values are nullable.
 A $\mathtt{ValueEnvironment}$ is an interface defined as:
 \begin{lstlisting}[language={kotac}]
 interface ValueEnvironment {
@@ -314,6 +314,7 @@ Figure \ref{fig:kotacSemantics} shows the operational semantics of the syntax. I
 It's important to note that a standard function $\sfname$ can be called for example with an aggregate anonymous functions $\name$ as parameters according to the syntax and semantics. If the function $\name$ is then called inside the body of $\sfname$ it will not have the expected aligned behavior. In order to avoid this situation typing rules must enforce that only standard values can be passed as arguments of standard functions (either declared or anonymous).
 
 \begin{figure}[!t]{
+ \scalebox{0.9}{
  $\begin{array}{l}
  %%%  SYNTAX
  \textbf{System configurations and action labels:}\\
@@ -369,6 +370,7 @@ It's important to note that a standard function $\sfname$ can be called for exam
 %\end{array}
 %
 \end{array}$
+}
 } %%%\capskip
  \caption{Small-step operational semantics for network evolution.} \label{fig:kotacnetworkSemantics}
 \end{figure}
