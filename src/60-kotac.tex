@@ -413,46 +413,60 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 \skiptransition
 %
 \nullsurfaceTyping{T-VAR}{
-\expTypJud{\TStypEnv}{\TtypEnv,\xname:\atype}{\xname}{\atype}
+\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv,\xname:\type}{\xname}{\type}
 }
 \qquad
 %
 {
-\surfaceTyping{T-DAT TODOOOOOO}{ \quad
+\surfaceTyping{T-DAT}{ \quad
 \applySubstitution{\type'}{\substitution{\overline\tvar}{\overline\type''}} = (\overline{\type})\rightarrow\type
 \qquad
-\expTypJud{\TStypEnv}{\TtypEnv}{\overline{\anyvalue}}{\atOf{\overline{\type}}{\tann}}
+\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\overline{\anyvalue}}{\overline{\type}}
 }{
-\expTypJud{\TStypEnv,\dc: \forall \overline{\tvar}. \atOf{\type'}{\tann}}{\TtypEnv}{\dc(\overline{\anyvalue})}{\atOf{\type}{\tann}} }
+\expTypJudC{\tctx}{\TStypEnv,\dc: \forall \overline{\tvar}. \type'}{\TtypEnv}{\dc(\overline{\anyvalue})}{\type} }
 }
 %
 \skiptransition
 %
 \surfaceTyping{T-A-AFUN}{ \quad
-\expTypJud{\TStypEnv}{\;\TtypEnv,\,\overline{\xname}:\overline{\atype}}{\e}{\atype}
-}{ \expTypJud{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}}{\atOf{(\overline{\atype})\rightarrow\atype}}{\aann}}
+\expTypJudC{\aann}{\TStypEnv}{\;\TtypEnv,\,\overline{\xname}:\overline{\type}}{\e}{\type}
+}{ \expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\e\}\}}}{(\overline{\type})\rightarrow\type}}
 %
 \skiptransition
 %
 \surfaceTyping{T-A-SFUN}{ \quad
-\expTypJud{\TStypEnv}{\;\TtypEnv,\,\overline{\xname}:\atOf{\overline{\type}}{\sann}}{\e}{\atOf{\type}{\sann}}
-}{ \expTypJud{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \; \ftoSym \{\e\}}{\atOf{(\atOf{\overline{\type}}{\sann})\rightarrow\atOf{\type}{\sann}}}{\sann}}
+\expTypJudC{\sann}{\TStypEnv}{\;\TtypEnv,\,\overline{\xname}:\overline{\type}}{\e}{\type}
+}{ \expTypJudC{\sann}{\TStypEnv}{\TtypEnv}{ (\overline{\xname}) \; \ftoSym \{\e\}}{(\overline{\type})\rightarrow\type}}
 %
 \skiptransition
 %
 {
-\surfaceTyping{T-N-FUN}{ \quad
-\mbox{$\funvalue$ is a (built-in or declared, aggregate or standard) function}}{
-\expTypJud{\TStypEnv,\funvalue: \forall \overline{\tvar}. \atOf{\type}{\tann}}{\TtypEnv}{\funvalue}{\atOf{\applySubstitution{\type}{\substitution{\overline\tvar}{\overline\type}}}}{\tann} }
+\surfaceTyping{T-N-AFUN}{ \quad
+\mbox{$\afunvalue$ is a (built-in or declared) aggregate function}}{
+\expTypJudC{\aann}{\TStypEnv,\afunvalue: \forall \overline{\tvar}. \type}{\TtypEnv}{\afunvalue}{\applySubstitution{\type}{\substitution{\overline\tvar}{\overline\type}}} }
 }
 %
 \skiptransition
 %
+{
+\surfaceTyping{T-N-SFUN}{ \quad
+\mbox{$\sfunvalue$ is a (built-in or declared) standard function}}{
+\expTypJudC{\tctx}{\TStypEnv,\sfunvalue: \forall \overline{\tvar}. \type}{\TtypEnv}{\sfunvalue}{\applySubstitution{\type}{\substitution{\overline\tvar}{\overline\type}}} }
+}
 %
-\surfaceTyping{T-APP}{ \quad
-\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\atOf{(\overline{\atype})\rightarrow\atype}{\tann}} \qquad
-\expTypJud{\TStypEnv}{\TtypEnv}{\overline{\e}}{\overline{\atype}} }{
-\expTypJud{\TStypEnv}{\TtypEnv}{\e(\overline{\e})}{\atype} }
+\skiptransition
+%
+\surfaceTyping{T-AAPP}{ \quad
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e}{(\overline{\type})\rightarrow\type} \qquad
+\expTypJudC{\overline{\tctx}}{\TStypEnv}{\TtypEnv}{\overline{\e}}{\overline{\type}} }{
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e(\overline{\e})}{\type} }
+%
+\skiptransition
+%
+\surfaceTyping{T-SAPP}{ \quad
+\expTypJudC{\sann}{\TStypEnv}{\TtypEnv}{\e}{(\overline{\type})\rightarrow\type} \qquad
+\expTypJudC{\sann}{\TStypEnv}{\TtypEnv}{\overline{\e}}{\overline{\type}} }{
+\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\e(\overline{\e})}{\type} }
 %
 \skiptransition
 %
@@ -465,23 +479,23 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 %\skiptransition
 %%
 \surfaceTyping{T-REP}{ \qquad
-\expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\type}
-\qquad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{(\type)\to \type} }{
-\expTypJud{\TStypEnv}{\TtypEnv}{\repK(\e_1)\{\e_2\}}{\type} }
+\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\e_1}{\type}
+\qquad \expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e_2}{(\type)\to \type} }{
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\repK(\e_1)\{\e_2\}}{\type} }
 %
 \qquad\qquad
 %
 \surfaceTyping{T-NBR}{ \qquad
-\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\type}
-}{ \expTypJud{\TStypEnv}{\TtypEnv}{\nbrK\{\e\}}{\type} }
+\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\e}{\type}
+}{ \expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\nbrK\{\e\}}{\type} }
 %
 \skiptransition
 %
-\surfaceTyping{T-FOLD}{ \qquad
+\surfaceTyping{T-SHARE}{ \qquad
 \expTypJud{\TStypEnv}{\TtypEnv}{\e_1}{\type}
 \quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_2}{(\type, \type) \to \type}
 \quad \expTypJud{\TStypEnv}{\TtypEnv}{\e_3}{\type} }{
-\expTypJud{\TStypEnv}{\TtypEnv}{\foldK(\e_1) (\e_2) \{\e_3\} }{\type} }
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\foldK(\e_1) (\e_2) \{\e_3\} }{\type} }
 %
 \skiptransition
 %
