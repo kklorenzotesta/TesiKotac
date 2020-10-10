@@ -81,37 +81,36 @@ The $\mathtt{ConcreteAggregateContext}$ contains then a field named $\mathtt{loc
 \begin{array}{l@{\hspace{1mm}}c@{\hspace{1mm}}l@{\hspace{-8mm}}r}
         \PROGRAM & \BNFcce & \overline{\FUNCTION} \; \aexp
                                                                                                                                                                                                         &   {\footnotesize \mbox{program}} \\[3pt]
-        \FUNCTION & \BNFcce &  \AFUNCTION \, \BNFmid \, \SFUNCTION
+        \FUNCTION & \BNFcce &  \SFUNCTION \, \BNFmid \, \AFUNCTION
                                                                                                                                                                                                         &   {\footnotesize \mbox{function declaration}} \\[3pt]
+        \hline \\[-6pt]
+        \SFUNCTION & \BNFcce &  \funK \; \sfname (\overline{\xname}) \; \{ \sexp \}
+                                                                                                                                                                                                        &   {\footnotesize \mbox{standard function declaration}} \\[3pt]
+        \sexp & \BNFcce & \xname \, \BNFmid \, \sanyvalue \, \BNFmid \, (\overline{\xname}) \; \ftoSym \{ \sexp \} \, \BNFmid \, \sexp(\overline{\sexp})
+                                                                                                                                                                                                        &   {\footnotesize \mbox{standard expression}} \\[3pt]
+                \sanyvalue & \BNFcce &  \lvalue \; \BNFmid \; \sfunvalue
+                &{ \mbox{\footnotesize standard value}}
+                \\[3pt]
+                \lvalue & \BNFcce &  \dcOf{\dc}{\overline\lvalue}
+                &{ \mbox{\footnotesize local data value}}
+                \\[3pt]
+        \sfunvalue & \BNFcce & \sbname \; \BNFmid \; \sfname \; \BNFmid \; (\overline{\xname}) \; \ftoSym \{ \sexp \}
+                                                                                                                                                                                                        &   {\footnotesize\mbox{standard function value}} \\
         \hline \\[-6pt]
         \AFUNCTION & \BNFcce &  \funK \; \afname (\overline{\xname}) \; \{ \alignK(\afname){\{\aexp\}} \}
                                                                                                                                                                                                         &   {\footnotesize \mbox{aggregate function declaration}} \\[3pt]
-        \aexp & \BNFcce & \xname \, \BNFmid \, \anyvalue \, \BNFmid \, \aexp(\overline{\aexp}) \, \BNFmid \, \repK(\aexp)\{ (\xname) \ftoSym \aexp \} \, \BNFmid \, \nbrK\{\aexp\} \, \BNFmid \,
-                                                                                                                                                                                                        &   {\footnotesize \mbox{aggregate expression}} \\
-        && \shareK(\aexp)\{(\xname) \ftoSym \aexp \} \\[3pt]
-                \anyvalue & \BNFcce &  \lvalue \; \BNFmid \; \fvalue
+        \aexp & \BNFcce & \xname \, \BNFmid \, \anyvalue  \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}} \, \BNFmid \, \aexp(\overline{\aexp}) \, \BNFmid \,  &   {\footnotesize \mbox{aggregate expression}} \\
+        && \repK(\aexp)\{ (\xname) \ftoSym \aexp \} \, \BNFmid \, \nbrK\{\aexp\} \, \BNFmid \, \shareK(\aexp)\{(\xname) \ftoSym \aexp \} \\[3pt]
+                \anyvalue & \BNFcce &  \lvalue \; \BNFmid \; \funvalue \; \BNFmid \; \fvalue
                 &{ \mbox{\footnotesize value}}
                 \\[3pt]
-                \lvalue & \BNFcce &  \alvalue \; \BNFmid \; \slvalue
-                &{ \mbox{\footnotesize local value}}
-                \\[3pt]
-              \alvalue & \BNFcce &  \dcOf{\dc}{\overline\lvalue} \; \BNFmid \; \afunvalue
-                &{ \mbox{\footnotesize aggregate local value}}
+              \funvalue & \BNFcce &  \sfunvalue \; \BNFmid \; \afunvalue
+                &{ \mbox{\footnotesize function value}}
                 \\[3pt]
                 \fvalue & \BNFcce &  \envmap{\overline\deviceId}{\overline\lvalue}
                 &{ \mbox{\footnotesize neighbouring field value}} \\
         \afunvalue & \BNFcce & \abname \; \BNFmid \; \afname \; \BNFmid \; (\overline{\xname}) \; \toSym{\name}{\{\alignK(\name)\{\aexp\}\}}
                                                                                                                                                                                                         &   {\footnotesize\mbox{aggregate function value}} \\
-        \hline \\[-6pt]
-        \SFUNCTION & \BNFcce &  \funK \; \sfname (\overline{\xname}) \; \{ \sexp \}
-                                                                                                                                                                                                        &   {\footnotesize \mbox{standard function declaration}} \\[3pt]
-        \sexp & \BNFcce & \xname \, \BNFmid \, \slvalue \, \BNFmid \, \sexp(\overline{\sexp})
-                                                                                                                                                                                                        &   {\footnotesize \mbox{standard expression}} \\[3pt]
-              \slvalue & \BNFcce &  \dcOf{\dc}{\overline\slvalue} \; \BNFmid \; \sfunvalue
-                &{ \mbox{\footnotesize standard local value}}
-                \\[3pt]
-        \sfunvalue & \BNFcce & \sbname \; \BNFmid \; \sfname \; \BNFmid \; (\overline{\xname}) \; \ftoSym \{ \sexp \}
-                                                                                                                                                                                                        &   {\footnotesize\mbox{standard function value}} \\
 
 \end{array}
 $
@@ -407,13 +406,11 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 %%%  TYPES
 \textbf{Types:}\\
 \begin{array}{rcl@{\hspace{7.5cm}}r}
-\atype & \BNFcce & \atOf{\type}{\tann} &   {\footnotesize \mbox{annotated type}} \\
+\type & \BNFcce &  \tvar  \; \BNFmid \;  \builtintype \; \BNFmid \;  (\overline\type) \rightarrow \type        &   {\footnotesize \mbox{type}} \\
 %
-\type & \BNFcce &  \tvar  \; \BNFmid \;  \builtintype \; \BNFmid \;  (\overline\atype) \rightarrow \atype        &   {\footnotesize \mbox{type}} \\
+\tctx & \BNFcce &  \aann \; \BNFmid \;  \sann &   {\footnotesize \mbox{context}} \\
 %
-\tann & \BNFcce &  \aann \; \BNFmid \;  \sann &   {\footnotesize \mbox{type annotation}} \\
-%
-\typescheme & \BNFcce &  \forall\overline{\tvar}.\atype      &   {\footnotesize \mbox{type scheme}} \\
+\typescheme & \BNFcce &  \forall\overline{\tvar}.\type      &   {\footnotesize \mbox{type scheme}} \\
 %
 %\localenv & \BNFcce & \envS{\senstate}{\overline\vtree} &   {\footnotesize \mbox{local environment}} \\
 \end{array}\\
@@ -421,17 +418,21 @@ Figure \ref{fig:kotacnetworkSemantics} defines the operational semantics of whol
 %%%  TYPE RULES
 \textbf{Expression typing:} 
   \hfill
-  \boxed{\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\atype}}
+  \boxed{\expTypJudC{\tctx}{\TStypEnv}{\TtypEnv}{\e}{\type}}
 \vspace{0.1cm}
   \\
 \begin{array}{c}
-{
-\surfaceTyping{T-ANN}{ \quad
-\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\atOf{\type}{\sann}}
+\surfaceTyping{T-ATOS}{ \quad
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e}{\builtintype}
 }{
-\expTypJud{\TStypEnv}{\TtypEnv}{\e}{\atOf{\type}{\aann}} }
+\expTypJudC{\sann}{\TStypEnv}{\TtypEnv}{\e}{\builtintype}
 }
 \qquad
+\surfaceTyping{T-STOA}{ \quad
+\expTypJudC{\sann}{\TStypEnv}{\TtypEnv}{\e}{\builtintype}
+}{
+\expTypJudC{\aann}{\TStypEnv}{\TtypEnv}{\e}{\builtintype}
+}
 \skiptransition
 %
 \nullsurfaceTyping{T-VAR}{
